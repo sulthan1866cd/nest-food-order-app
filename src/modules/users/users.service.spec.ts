@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
-import { MockModule } from '../../mockDB/mocks.module';
+import { MockModule } from '../../mockRepos/mocks.module';
 import { IRepository } from 'src/interface/repository.interface';
 import { User } from './entities/user.entity';
 

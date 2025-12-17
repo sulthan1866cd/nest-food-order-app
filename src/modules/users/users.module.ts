@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
-import { MockModule } from 'src/mockDB/mocks.module';
+import { MockModule } from 'src/mockRepos/mocks.module';
 import { UsersService } from './users.service';
 
 @Module({

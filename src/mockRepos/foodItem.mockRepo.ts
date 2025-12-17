@@ -1,7 +1,7 @@
-// import { FoodItem } from 'src/food-items/entities/food-item.entity';
+import { FoodItem } from 'src/modules/food-items/entities/food-item.entity';
 import { BaseMockRepository } from './baseMockRepo';
 
-export class foodItemMockRepository extends BaseMockRepository<any> {
+export class foodItemMockRepository extends BaseMockRepository<FoodItem> {
   constructor() {
     super(
       Promise.resolve([
