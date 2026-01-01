@@ -1,7 +1,8 @@
+import { randomUUID } from 'crypto';
 import { IRepository } from 'src/interface/repository.interface';
 
 export class BaseMockRepository<
-  T extends { id: number },
+  T extends { id: string },
 > implements IRepository<T> {
   protected mocks: Promise<T[]>;
 
@@ -10,7 +11,10 @@ export class BaseMockRepository<
   }
 
   async create(entity: T): Promise<T | null> {
-    const newEntity = { ...entity, id: (await this.mocks).length + 1 };
+    const newEntity = {
+      ...entity,
+      id: randomUUID(),
+    };
     (await this.mocks).push(newEntity);
     return this.findOneBy(entity);
   }

@@ -6,6 +6,18 @@ export class Validator<T> implements PipeTransform<Partial<T>, T> {
     this.ref = ref;
   }
   transform(value: Partial<T>): T {
+    if (!value)
+      throw new BadRequestException(
+        `no body found, expected body of type ${JSON.stringify(
+          (() => {
+            const obj = {};
+            for (const key in this.ref) {
+              obj[key] = typeof this.ref[key];
+            }
+            return obj; // bad code
+          })(),
+        )}`,
+      );
     for (const key in this.ref) {
       if (!value[key])
         throw new BadRequestException(
