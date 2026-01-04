@@ -49,10 +49,12 @@ describe('OrdersController', () => {
       const createFn = jest
         .spyOn(ordersService, 'create')
         .mockResolvedValue(order);
+
       const actual = await ordersController.create(createOrder);
-      expect(actual).toBe(order);
+      expect(actual).toEqual(order);
       expect(createFn).toHaveBeenCalledWith(createOrder);
     });
+
     it('should throw exception if user dosent exist', async () => {
       const order = getMockOrder();
       const createOrder: CreateOrderDto = {
@@ -64,6 +66,7 @@ describe('OrdersController', () => {
       const createFn = jest
         .spyOn(ordersService, 'create')
         .mockResolvedValue(null);
+
       await expect(ordersController.create(createOrder)).rejects.toThrow(
         NotFoundException,
       );
@@ -76,8 +79,9 @@ describe('OrdersController', () => {
       const findAllFn = jest
         .spyOn(ordersService, 'findAll')
         .mockResolvedValue(mockOrders);
+
       const actual = await ordersController.findAll();
-      expect(actual).toBe(mockOrders);
+      expect(actual).toEqual(mockOrders);
       expect(findAllFn).toHaveBeenCalled();
     });
   });
@@ -88,8 +92,9 @@ describe('OrdersController', () => {
       const findByUsernameFn = jest
         .spyOn(ordersService, 'findByUsername')
         .mockResolvedValue(mockOrders);
+
       const actual = await ordersController.findByUsername(username);
-      expect(actual).toBe(mockOrders);
+      expect(actual).toEqual(mockOrders);
       expect(findByUsernameFn).toHaveBeenCalledWith(username);
     });
   });
@@ -100,14 +105,17 @@ describe('OrdersController', () => {
       const removeFn = jest
         .spyOn(ordersService, 'remove')
         .mockResolvedValue(true);
+
       await ordersController.remove(id);
       expect(removeFn).toHaveBeenCalledWith(id);
     });
+
     it('should throw exception if order dosent exist', async () => {
       const id = getMockOrder().id;
       const removeFn = jest
         .spyOn(ordersService, 'remove')
         .mockResolvedValue(false);
+
       await expect(ordersController.remove(id)).rejects.toThrow(
         NotFoundException,
       );

@@ -9,6 +9,7 @@ import {
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { UpdateFoodItemDto } from './dto/food-item.dto';
+import { getMockUser } from 'src/mocks/mockDatas/users.stub';
 
 describe('FoodItemsController', () => {
   let foodItemController: FoodItemsController;
@@ -49,8 +50,9 @@ describe('FoodItemsController', () => {
       const createFn = jest
         .spyOn(foodItemService, 'create')
         .mockResolvedValue(foodItem);
+
       const actual = await foodItemController.create(foodItem, image);
-      expect(actual).toBe(foodItem);
+      expect(actual).toEqual(foodItem);
       expect(createFn).toHaveBeenCalledWith(foodItem, image);
     });
 
@@ -73,14 +75,16 @@ describe('FoodItemsController', () => {
       const findAllByFn = jest
         .spyOn(foodItemService, 'findAllBy')
         .mockResolvedValue(mockFoodItems);
+
       const actual = await foodItemController.findAll();
-      expect(actual).toBe(mockFoodItems);
+      expect(actual).toEqual(mockFoodItems);
       expect(findAllByFn).toHaveBeenCalledWith({
         searchQuery: undefined,
         min: undefined,
         max: undefined,
       });
     });
+
     it('should return all foodItems matching search queries', async () => {
       const searchParams = { searchQuery: 'abc', min: '20', max: '40' };
       const findAllByFn = jest
@@ -91,19 +95,20 @@ describe('FoodItemsController', () => {
         searchParams.min,
         searchParams.max,
       );
-      expect(actual).toBe(mockFoodItems);
+      expect(actual).toEqual(mockFoodItems);
       expect(findAllByFn).toHaveBeenCalledWith(searchParams);
     });
   });
 
   describe('findAllByOrdersUsername()', () => {
     it('should return foodItems of user  orders', async () => {
-      const username = 'usr';
+      const username = getMockUser().username;
       const findAllByOrdersUserameFn = jest
         .spyOn(foodItemService, 'findAllByOrdersUserame')
         .mockResolvedValue(mockFoodItems);
+
       const actual = await foodItemController.findAllByOrdersUsername(username);
-      expect(actual).toBe(mockFoodItems);
+      expect(actual).toEqual(mockFoodItems);
       expect(findAllByOrdersUserameFn).toHaveBeenCalledWith(username);
     });
   });
@@ -114,15 +119,18 @@ describe('FoodItemsController', () => {
       const findOneFn = jest
         .spyOn(foodItemService, 'findOne')
         .mockResolvedValue(foodItem);
+
       const actual = await foodItemController.findOne(foodItem.id);
-      expect(actual).toBe(foodItem);
+      expect(actual).toEqual(foodItem);
       expect(findOneFn).toHaveBeenCalledWith(foodItem.id);
     });
+
     it('should throw exception if service returns null', async () => {
       const id = randomUUID();
       const findOneFn = jest
         .spyOn(foodItemService, 'findOne')
         .mockResolvedValue(null);
+
       await expect(foodItemController.findOne(id)).rejects.toThrow(
         NotFoundException,
       );
@@ -138,14 +146,16 @@ describe('FoodItemsController', () => {
       const updateFn = jest
         .spyOn(foodItemService, 'update')
         .mockResolvedValue(foodItem);
+
       const actual = await foodItemController.update(
         foodItem.id,
         updateFoodItem,
         image,
       );
-      expect(actual).toBe(foodItem);
+      expect(actual).toEqual(foodItem);
       expect(updateFn).toHaveBeenCalledWith(foodItem.id, updateFoodItem, image);
     });
+
     it('should throw exception if foodItem dosent exist', async () => {
       const id = randomUUID();
       const image = getMockImageFile();
@@ -153,6 +163,7 @@ describe('FoodItemsController', () => {
       const updateFn = jest
         .spyOn(foodItemService, 'update')
         .mockResolvedValue(null);
+
       await expect(
         foodItemController.update(id, updateFoodItem, image),
       ).rejects.toThrow(NotFoundException);
@@ -166,14 +177,17 @@ describe('FoodItemsController', () => {
       const deleteFn = jest
         .spyOn(foodItemService, 'remove')
         .mockResolvedValue(true);
+
       await foodItemController.remove(id);
       expect(deleteFn).toHaveBeenCalledWith(id);
     });
+
     it('should throw exception if foodItem dosnt exists', async () => {
       const id = randomUUID();
       const deleteFn = jest
         .spyOn(foodItemService, 'remove')
         .mockResolvedValue(false);
+
       await expect(foodItemController.remove(id)).rejects.toThrow(
         NotFoundException,
       );

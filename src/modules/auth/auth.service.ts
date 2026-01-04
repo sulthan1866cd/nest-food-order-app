@@ -18,6 +18,7 @@ export class AuthService implements IAuthService {
   generateToken(user: User): string {
     return this.jwtService.sign(user);
   }
+
   validateToken(token: string): User {
     try {
       return this.jwtService.verify(token);
@@ -25,6 +26,7 @@ export class AuthService implements IAuthService {
       throw new UnauthorizedException('invalid token');
     }
   }
+
   async validateUser(
     username: string,
     email: string,
@@ -34,7 +36,7 @@ export class AuthService implements IAuthService {
       (await this.userService.findOne(username)) ||
       (await this.userService.findOneByEmail(email));
     if (!user) throw new NotFoundException(`user: ${username} not found`);
-    if (user.password !== password) throw new UnauthorizedException();
+    if (user.password !== password) throw new UnauthorizedException(); // bad code
     return user;
   }
 }

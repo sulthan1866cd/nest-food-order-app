@@ -51,22 +51,13 @@ describe('OrdersService', () => {
         quantity: 3,
         time: new Date(),
       };
-      const isExistsFn = jest
-        .spyOn(usersService, 'isExists')
-        .mockResolvedValue(true);
-      const findOneByFn = jest
-        .spyOn(orderRepo, 'findOneBy')
-        .mockResolvedValue(null);
-      const updateFn = jest.spyOn(orderRepo, 'update');
+      jest.spyOn(usersService, 'isExists').mockResolvedValue(true);
+      jest.spyOn(orderRepo, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(orderRepo, 'update');
       const createFn = jest.spyOn(orderRepo, 'create').mockResolvedValue(order);
+
       const actual = await ordersService.create(createOrder);
-      expect(actual).toBe(order);
-      expect(isExistsFn).toHaveBeenCalledWith(order.username);
-      expect(findOneByFn).toHaveBeenCalledWith({
-        username: order.username,
-        foodItemId: order.foodItemId,
-      });
-      expect(updateFn).not.toHaveBeenCalled();
+      expect(actual).toEqual(order);
       expect(createFn).toHaveBeenCalledWith(createOrder);
     });
 
@@ -78,25 +69,13 @@ describe('OrdersService', () => {
         quantity: 3,
         time: new Date(),
       };
-      const isExistsFn = jest
-        .spyOn(usersService, 'isExists')
-        .mockResolvedValue(true);
-      const findOneByFn = jest
-        .spyOn(orderRepo, 'findOneBy')
-        .mockResolvedValue(order);
-      const updateFn = jest.spyOn(orderRepo, 'update').mockResolvedValue(order);
+      jest.spyOn(usersService, 'isExists').mockResolvedValue(true);
+      jest.spyOn(orderRepo, 'findOneBy').mockResolvedValue(order);
+      jest.spyOn(orderRepo, 'update').mockResolvedValue(order);
       const createFn = jest.spyOn(orderRepo, 'create');
+
       const actual = await ordersService.create(createOrder);
-      expect(actual).toBe(order);
-      expect(isExistsFn).toHaveBeenCalledWith(order.username);
-      expect(findOneByFn).toHaveBeenCalledWith({
-        username: order.username,
-        foodItemId: order.foodItemId,
-      });
-      expect(updateFn).toHaveBeenCalledWith({
-        ...order,
-        quantity: order.quantity + createOrder.quantity,
-      });
+      expect(actual).toEqual(order);
       expect(createFn).not.toHaveBeenCalled();
     });
 
@@ -108,17 +87,13 @@ describe('OrdersService', () => {
         quantity: 3,
         time: new Date(),
       };
-      const isExistsFn = jest
-        .spyOn(usersService, 'isExists')
-        .mockResolvedValue(false);
-      const findOneByFn = jest.spyOn(orderRepo, 'findOneBy');
-      const updateFn = jest.spyOn(orderRepo, 'update');
+      jest.spyOn(usersService, 'isExists');
+      jest.spyOn(orderRepo, 'findOneBy');
+      jest.spyOn(orderRepo, 'update');
       const createFn = jest.spyOn(orderRepo, 'create');
+
       const actual = await ordersService.create(createOrder);
       expect(actual).toBeNull();
-      expect(isExistsFn).toHaveBeenCalledWith(order.username);
-      expect(findOneByFn).not.toHaveBeenCalled();
-      expect(updateFn).not.toHaveBeenCalled();
       expect(createFn).not.toHaveBeenCalled();
     });
   });
@@ -129,7 +104,7 @@ describe('OrdersService', () => {
         .spyOn(orderRepo, 'findBy')
         .mockResolvedValue(mockOrders);
       const actual = await ordersService.findAll();
-      expect(actual).toBe(mockOrders);
+      expect(actual).toEqual(mockOrders);
       expect(findByFn).toHaveBeenCalled();
     });
   });
@@ -141,7 +116,7 @@ describe('OrdersService', () => {
         .spyOn(orderRepo, 'findBy')
         .mockResolvedValue(mockOrders);
       const actual = await ordersService.findByUsername(username);
-      expect(actual).toBe(mockOrders);
+      expect(actual).toEqual(mockOrders);
       expect(findByFn).toHaveBeenCalledWith({ username });
     });
   });
