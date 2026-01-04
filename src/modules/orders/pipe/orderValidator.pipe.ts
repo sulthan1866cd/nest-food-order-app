@@ -1,15 +1,17 @@
-import { Order } from '../entities/order.entity';
+import { CreateOrderDto } from '../dto/orders.dto';
 import { Validator } from 'src/pipes/validation.pipe';
 
-export class OrderValidator extends Validator<
-  Omit<Order, 'time' | 'foodItem'> & { time: string } // bad code
-> {
+export class OrderValidator extends Validator<CreateOrderDto> {
   constructor() {
     super({
       username: '',
       foodItemId: '',
       quantity: 0,
-      time: '',
+      time: new Date(),
     });
+  }
+  transform(value: CreateOrderDto): CreateOrderDto {
+    value.time = new Date(value.time);
+    return super.transform(value);
   }
 }

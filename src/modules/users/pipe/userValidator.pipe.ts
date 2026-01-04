@@ -1,8 +1,8 @@
 import { Role } from 'src/gurds/role.enum';
-import { User } from '../entities/user.entity';
 import { Validator } from 'src/pipes/validation.pipe';
+import { CreateUserDto } from '../dto/users.dto.';
 
-export class UserValidator extends Validator<User> {
+export class UserValidator extends Validator<CreateUserDto> {
   constructor() {
     super({
       username: '',

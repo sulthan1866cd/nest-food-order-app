@@ -19,8 +19,12 @@ import { Roles } from 'src/gurds/roles.decorator';
 import { Role } from 'src/gurds/role.enum';
 import { AuthGaurd } from 'src/gurds/auth.guard';
 import { RolesGuard } from 'src/gurds/roles.guard';
-import { FoodItemValidator } from './pipe/foodItemValidator.pipe';
+import {
+  CreateFoodItemValidator,
+  UpdateFoodItemValidator,
+} from './pipe/foodItemValidator.pipe';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateFoodItemDto, UpdateFoodItemDto } from './dto/food-item.dto';
 
 @Controller('food-items')
 export class FoodItemsController {
@@ -31,7 +35,7 @@ export class FoodItemsController {
   @UseGuards(AuthGaurd, RolesGuard)
   @UseInterceptors(FileInterceptor('image'))
   async create(
-    @Body(FoodItemValidator) foodItem: FoodItem,
+    @Body(CreateFoodItemValidator) foodItem: CreateFoodItemDto,
     @UploadedFile() imageFile: Express.Multer.File,
   ): Promise<FoodItem> {
     const createdFoodItem = await this.foodItemsService.create(
@@ -79,7 +83,7 @@ export class FoodItemsController {
   @UseInterceptors(FileInterceptor('image'))
   async update(
     @Param('id') id: string,
-    @Body(FoodItemValidator) foodItem: FoodItem,
+    @Body(UpdateFoodItemValidator) foodItem: UpdateFoodItemDto,
     @UploadedFile() imageFile?: Express.Multer.File,
   ): Promise<FoodItem> {
     const updatedFoodItem = await this.foodItemsService.update(

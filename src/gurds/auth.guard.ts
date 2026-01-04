@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { type IAuthService } from 'src/interface/authService.interface';
-import { User } from 'src/modules/users/entities/user.entity';
+import { ClientUserDto } from 'src/modules/users/dto/users.dto.';
 
 export class AuthGaurd implements CanActivate {
   constructor(
@@ -14,13 +14,14 @@ export class AuthGaurd implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const req = context
-      .switchToHttp()
-      .getRequest<{ headers: { authorization: string }; user: User }>();
+    const req = context.switchToHttp().getRequest<{
+      headers: { authorization: string };
+      user: ClientUserDto;
+    }>();
     const authorization = req.headers.authorization;
     if (!authorization) throw new UnauthorizedException();
-    const authkey = authorization.split(' ')[1];
-    const user = this.authService.validateToken(authkey);
+    const token = authorization.split(' ')[1];
+    const user = this.authService.validateToken(token);
     req.user = user;
     return true;
   }

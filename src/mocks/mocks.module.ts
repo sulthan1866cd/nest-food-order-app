@@ -3,7 +3,6 @@ import { UserMockRepository } from './mockRepos/users.mockRepo';
 import { OrderMockRepository } from './mockRepos/orders.mockRepo';
 import { foodItemMockRepository } from './mockRepos/foodItem.mockRepo';
 import { UsersModule } from './../modules/users/users.module';
-import { RolesGuard } from 'src/gurds/roles.guard';
 
 @Module({
   imports: [forwardRef(() => UsersModule)],
@@ -20,13 +19,7 @@ import { RolesGuard } from 'src/gurds/roles.guard';
       provide: 'FoodItemRepository',
       useClass: foodItemMockRepository,
     },
-    RolesGuard,
   ],
-  exports: [
-    'UserRepository',
-    'OrderRepository',
-    'FoodItemRepository',
-    RolesGuard,
-  ],
+  exports: ['UserRepository', 'OrderRepository', 'FoodItemRepository'],
 })
 export class MockModule {}

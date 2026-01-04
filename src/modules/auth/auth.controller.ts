@@ -1,8 +1,19 @@
-import { Body, Controller, Get, Headers, Inject, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Inject,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { type IAuthService } from 'src/interface/authService.interface';
 import { User } from '../users/entities/user.entity';
+import { ClientUserDto } from '../users/dto/users.dto.';
+import { UserInterceptor } from '../users/interceptor/users.interceptor';
 
 @Controller('auth')
+@UseInterceptors(UserInterceptor)
 export class AuthController {
   constructor(
     @Inject('AuthService')
@@ -10,7 +21,7 @@ export class AuthController {
   ) {}
 
   @Post()
-  async authoriseUser(@Body() user: User) {
+  async authoriseUser(@Body() user: User): Promise<ClientUserDto> {
     const usr = await this.authService.validateUser(
       user.username,
       user.username,
@@ -21,7 +32,7 @@ export class AuthController {
   }
 
   @Get('validate-token')
-  validateToken(@Headers('authorization') token: string) {
+  validateToken(@Headers('authorization') token: string): ClientUserDto {
     token = token.split(' ')[1];
     return this.authService.validateToken(token);
   }

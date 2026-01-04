@@ -17,6 +17,7 @@ import { AuthGaurd } from 'src/gurds/auth.guard';
 import { Roles } from 'src/gurds/roles.decorator';
 import { Role } from 'src/gurds/role.enum';
 import { RolesGuard } from 'src/gurds/roles.guard';
+import { CreateOrderDto } from './dto/orders.dto';
 
 @Controller('orders')
 @UseGuards(AuthGaurd)
@@ -25,7 +26,7 @@ export class OrdersController {
 
   @Post()
   @UsePipes(OrderValidator)
-  async create(@Body() order: Order): Promise<Order> {
+  async create(@Body() order: CreateOrderDto): Promise<Order> {
     const createdOrder = await this.ordersService.create(order);
     if (!createdOrder)
       throw new NotFoundException(`user ${order.username} not found`);

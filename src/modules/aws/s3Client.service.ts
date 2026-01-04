@@ -1,6 +1,8 @@
 import {
   CreateBucketCommand,
+  CreateBucketCommandOutput,
   DeleteObjectCommand,
+  DeleteObjectCommandOutput,
   GetObjectCommand,
   ListBucketsCommand,
   PutObjectCommand,
@@ -9,9 +11,10 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { IS3ClientService } from 'src/interface/s3ClientService.interface';
 
 @Injectable()
-export class S3ClientSerivce {
+export class S3ClientService implements IS3ClientService {
   private s3Client: S3Client;
   constructor(private readonly config: ConfigService) {
     this.s3Client = new S3Client({
@@ -29,12 +32,13 @@ export class S3ClientSerivce {
     Bucket: string = this.config.getOrThrow<string>(
       'AWS_S3_DEFAULT_BUCKET_NAME',
     ),
-  ) {
+  ): Promise<CreateBucketCommandOutput | null> {
     try {
       const buckets = (await this.s3Client.send(new ListBucketsCommand()))
         .Buckets;
       if (!buckets?.some((bucket) => bucket.Name === Bucket))
         return this.s3Client.send(new CreateBucketCommand({ Bucket }));
+      return null;
     } catch {
       //hard debug bad code
       throw new InternalServerErrorException();
@@ -47,7 +51,7 @@ export class S3ClientSerivce {
     Bucket: string = this.config.getOrThrow<string>(
       'AWS_S3_DEFAULT_BUCKET_NAME',
     ),
-  ) {
+  ): Promise<string> {
     try {
       await this.s3Client.send(
         new PutObjectCommand({ Bucket, Key, Body: file }),
@@ -64,7 +68,7 @@ export class S3ClientSerivce {
     Bucket: string = this.config.getOrThrow<string>(
       'AWS_S3_DEFAULT_BUCKET_NAME',
     ),
-  ) {
+  ): Promise<DeleteObjectCommandOutput> {
     try {
       return this.s3Client.send(new DeleteObjectCommand({ Bucket, Key }));
     } catch {

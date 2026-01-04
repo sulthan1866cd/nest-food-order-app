@@ -4,7 +4,6 @@ import { MockModule } from 'src/mocks/mocks.module';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
-import { AuthMockService } from 'src/mocks/mockService/auth.mockService';
 import { ConfigService } from '@nestjs/config';
 
 @Module({
@@ -19,18 +18,9 @@ import { ConfigService } from '@nestjs/config';
     }),
   ],
   providers: [
-    AuthService,
-    AuthMockService,
     {
       provide: 'AuthService',
-      inject: [ConfigService, AuthService, AuthMockService],
-      useFactory: (
-        config: ConfigService,
-        auth: AuthService,
-        mockAuth: AuthMockService,
-      ) => {
-        return config.get<string>('AUTH_PROFILE') === 'mock' ? mockAuth : auth;
-      },
+      useClass: AuthService,
     },
   ],
   controllers: [AuthController],

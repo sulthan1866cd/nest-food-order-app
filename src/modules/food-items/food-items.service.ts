@@ -2,7 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { FoodItem } from './entities/food-item.entity';
 import { type IRepository } from 'src/interface/repository.interface';
 import { OrdersService } from '../orders/orders.service';
-import { S3ClientSerivce } from '../aws/s3Client.service';
+import { type IS3ClientService } from 'src/interface/s3ClientService.interface';
+import { CreateFoodItemDto, UpdateFoodItemDto } from './dto/food-item.dto';
 
 interface FindAllByParams {
   searchQuery?: string;
@@ -15,20 +16,24 @@ export class FoodItemsService {
   constructor(
     @Inject('FoodItemRepository')
     private readonly foodItemRepo: IRepository<FoodItem>,
-    private readonly orderServcie: OrdersService,
-    private readonly s3ClientService: S3ClientSerivce,
+    private readonly ordersService: OrdersService,
+    @Inject('S3ClientService')
+    private readonly s3ClientService: IS3ClientService,
   ) {}
 
   async create(
-    foodItem: FoodItem,
+    foodItem: CreateFoodItemDto,
     imageFile: Express.Multer.File,
   ): Promise<FoodItem | null> {
     if (await this.isExists(foodItem.name)) return null;
+    const createdFoodItem = (await this.foodItemRepo.create(
+      foodItem,
+    )) as FoodItem;
     const url = await this.s3ClientService.upload(
-      foodItem.id,
+      createdFoodItem.id,
       imageFile.buffer,
     );
-    return this.foodItemRepo.create({ ...foodItem, image: url });
+    return this.foodItemRepo.update({ id: createdFoodItem.id, image: url });
   }
 
   async findAllBy({
@@ -46,7 +51,7 @@ export class FoodItemsService {
   }
 
   async findAllByOrdersUserame(username: string): Promise<FoodItem[]> {
-    const orders = await this.orderServcie.findByUsername(username);
+    const orders = await this.ordersService.findByUsername(username);
     return orders.map((order) => order.foodItem);
   }
 
@@ -56,13 +61,13 @@ export class FoodItemsService {
 
   async update(
     id: string,
-    foodItem: FoodItem,
+    foodItem: UpdateFoodItemDto,
     imageFile?: Express.Multer.File,
   ): Promise<FoodItem | null> {
     if (!(await this.isExists(id))) return null;
     const url = imageFile
       ? await this.s3ClientService.upload(id, imageFile.buffer)
-      : foodItem.image;
+      : undefined;
     return this.foodItemRepo.update({ ...foodItem, id, image: url });
   }
 
@@ -74,7 +79,7 @@ export class FoodItemsService {
   }
 
   private async isExists(checkFoodItem: string): Promise<boolean> {
-    return !!(await this.findAll()).find(
+    return (await this.findAll()).some(
       (foodItem) =>
         foodItem.id === checkFoodItem || foodItem.name === checkFoodItem,
     );

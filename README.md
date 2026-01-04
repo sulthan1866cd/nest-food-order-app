@@ -96,3 +96,8 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+check // bad code or any comment to find good to start issues 
+
+try to inntroduce DTO and replace Omit and Pick everywhere

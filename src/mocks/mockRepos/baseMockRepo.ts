@@ -10,11 +10,11 @@ export class BaseMockRepository<
     this.mocks = mocks;
   }
 
-  async create(entity: T): Promise<T | null> {
+  async create(entity: Partial<T>): Promise<T | null> {
     const newEntity = {
       ...entity,
       id: randomUUID(),
-    };
+    } as T;
     (await this.mocks).push(newEntity);
     return this.findOneBy(entity);
   }
@@ -40,13 +40,18 @@ export class BaseMockRepository<
     );
   }
 
-  async update(entity: T): Promise<T | null> {
+  async update(entity: Partial<T>): Promise<T | null> {
+    const fullEntity = await this.findOneBy({ id: entity.id } as T);
+    if (!fullEntity) return null;
+    for (const key in entity) {
+      if (entity[key]) fullEntity[key] = entity[key];
+    }
     const newMocks = (await this.mocks).map((mock) => {
-      if (mock.id === entity.id) return entity;
+      if (mock.id === fullEntity.id) return fullEntity;
       return mock;
     });
     this.mocks = Promise.resolve(newMocks);
-    return this.findOneBy(entity);
+    return this.findOneBy(fullEntity);
   }
 
   async deleteBy(where: Partial<T>): Promise<void> {
