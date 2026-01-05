@@ -6,7 +6,7 @@ import { AuthModule } from '../auth/auth.module';
 import { AdminsController } from './admins.controller';
 
 @Module({
-  imports: [forwardRef(() => MockModule), forwardRef(() => AuthModule)],
+  imports: [MockModule, forwardRef(() => AuthModule)],
   controllers: [CustomersController, AdminsController],
   providers: [UsersService],
   exports: [UsersService],
