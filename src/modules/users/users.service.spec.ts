@@ -6,6 +6,7 @@ import { getMockUser, mockUsers } from 'src/mocks/mockDatas/users.stub';
 import { CreateUserDto, UpdateUserDto } from './dto/users.dto.';
 import { IAuthService } from 'src/interface/authService.interface';
 import { Role } from 'src/gurds/role.enum';
+import { ConflictException } from '@nestjs/common';
 
 describe('UsersService', () => {
   let userService: UsersService;
@@ -160,7 +161,8 @@ describe('UsersService', () => {
     it('should update user and return updated user', async () => {
       const user = getMockUser();
       const updateUser: UpdateUserDto = { email: 'email' };
-      jest.spyOn(userService, 'isExists').mockResolvedValue(true);
+      jest.spyOn(userService, 'findOne').mockResolvedValue(user);
+      jest.spyOn(userService, 'findOneByEmail').mockResolvedValue(null);
       const updateFn = jest.spyOn(userRepo, 'update').mockResolvedValue(user);
 
       const actual = await userService.update(user.username, updateUser);
@@ -173,12 +175,27 @@ describe('UsersService', () => {
 
     it('should return null if user dosnt exist', async () => {
       const user = getMockUser();
-      const updateUser: UpdateUserDto = { email: 'email' };
-      jest.spyOn(userService, 'isExists').mockResolvedValue(false);
+      const updateUser: UpdateUserDto = { fullName: 'fullName' };
+      jest.spyOn(userService, 'findOne').mockResolvedValue(null);
       const updateFn = jest.spyOn(userRepo, 'update');
 
       const actual = await userService.update(user.username, updateUser);
       expect(actual).toBeNull();
+      expect(updateFn).not.toHaveBeenCalled();
+    });
+
+    it('should throw exception if email already exists', async () => {
+      const user = getMockUser();
+      const updateUser: UpdateUserDto = { email: 'email' };
+      jest.spyOn(userService, 'findOne').mockResolvedValue(user);
+      jest
+        .spyOn(userService, 'findOneByEmail')
+        .mockResolvedValue({ ...user, username: 'new user' });
+      const updateFn = jest.spyOn(userRepo, 'update');
+
+      await expect(
+        userService.update(user.username, updateUser),
+      ).rejects.toThrow(ConflictException);
       expect(updateFn).not.toHaveBeenCalled();
     });
   });
@@ -212,6 +229,21 @@ describe('UsersService', () => {
         updateUser,
       );
       expect(actual).toBeNull();
+      expect(updateFn).not.toHaveBeenCalled();
+    });
+
+    it('should throw exception if email already exists', async () => {
+      const user = getMockUser();
+      const updateUser: UpdateUserDto = { email: 'email' };
+      jest.spyOn(userService, 'findOneCustomer').mockResolvedValue(user);
+      jest
+        .spyOn(userService, 'findOneByEmail')
+        .mockResolvedValue({ ...user, username: 'new user' });
+      const updateFn = jest.spyOn(userRepo, 'update');
+
+      await expect(
+        userService.updateCustomer(user.username, updateUser),
+      ).rejects.toThrow(ConflictException);
       expect(updateFn).not.toHaveBeenCalled();
     });
   });

@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { type IRepository } from 'src/interface/repository.interface';
 import { type IAuthService } from 'src/interface/authService.interface';
@@ -43,7 +48,18 @@ export class UsersService {
 
   async update(username: string, user: UpdateUserDto): Promise<User | null> {
     const newUser = { ...user, username };
-    if (!(await this.isExists(username))) return null;
+    const existingUser = await this.findOne(username);
+    if (!existingUser) return null;
+    if (user.email) {
+      const existingUserWithCurrentEmail = await this.findOneByEmail(
+        user.email,
+      );
+      if (
+        existingUserWithCurrentEmail &&
+        existingUserWithCurrentEmail?.username !== username
+      )
+        throw new ConflictException('Email already exists for another user');
+    }
     return await this.userRepo.update(newUser);
   }
 
@@ -52,7 +68,18 @@ export class UsersService {
     user: UpdateUserDto,
   ): Promise<User | null> {
     const newUser = { ...user, username };
-    if (!(await this.findOneCustomer(username))) return null;
+    const existingUser = await this.findOneCustomer(username);
+    if (!existingUser) return null;
+    if (user.email) {
+      const existingUserWithCurrentEmail = await this.findOneByEmail(
+        user.email,
+      );
+      if (
+        existingUserWithCurrentEmail &&
+        existingUserWithCurrentEmail?.username !== username
+      )
+        throw new ConflictException('Email already exists for another user');
+    }
     return await this.userRepo.update(newUser);
   }
 
