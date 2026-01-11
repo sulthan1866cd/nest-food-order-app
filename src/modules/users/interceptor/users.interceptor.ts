@@ -9,23 +9,24 @@ import { ClientUserDto } from '../dto/users.dto.';
 import { User } from '../entities/user.entity';
 
 @Injectable()
-export class UserInterceptor implements NestInterceptor<
-  ClientUserDto | User,
-  ClientUserDto
+export class UsersInterceptor implements NestInterceptor<
+  User[],
+  ClientUserDto[]
 > {
   intercept(
     context: ExecutionContext,
-    next: CallHandler<ClientUserDto | User>,
-  ): Observable<ClientUserDto> {
+    next: CallHandler<User[]>,
+  ): Observable<ClientUserDto[]> {
     return next.handle().pipe(
-      map((user) => ({
-        username: user.username,
-        email: user.email,
-        fullName: user.fullName,
-        id: user.id,
-        role: user.role,
-        authorization: user['authorization'] as string,
-      })),
+      map((users) =>
+        users.map((user) => ({
+          username: user.username,
+          email: user.email,
+          fullName: user.fullName,
+          id: user.id,
+          role: user.role,
+        })),
+      ),
     );
   }
 }

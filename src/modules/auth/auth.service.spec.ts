@@ -3,13 +3,19 @@ import { IAuthService } from 'src/interface/authService.interface';
 import { UsersService } from '../users/users.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { getMockUser } from 'src/mocks/mockDatas/users.stub';
+import {
+  getMockUser,
+  getOriginalPassword,
+  mockUsers,
+} from 'src/mocks/mockDatas/users.stub';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { HashService } from './hash.service';
 
 describe('AuthService', () => {
   let authService: IAuthService;
   let jwtService: JwtService;
   let userService: UsersService;
+  let hashService: HashService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,17 +29,23 @@ describe('AuthService', () => {
           provide: UsersService,
           useValue: { findOne: jest.fn(), findOneByEmail: jest.fn() },
         },
+        {
+          provide: HashService,
+          useValue: { compare: jest.fn() },
+        },
       ],
     }).compile();
     authService = module.get<IAuthService>('AuthService');
     jwtService = module.get<JwtService>(JwtService);
     userService = module.get<UsersService>(UsersService);
+    hashService = module.get<HashService>(HashService);
   });
 
   it('should be defined', () => {
     expect(authService).toBeDefined();
     expect(jwtService).toBeDefined();
     expect(userService).toBeDefined();
+    expect(hashService).toBeDefined();
   });
 
   describe('generateToken()', () => {
@@ -72,6 +84,7 @@ describe('AuthService', () => {
     it('should validate and return user', async () => {
       const user = getMockUser();
       jest.spyOn(userService, 'findOne').mockResolvedValue(user);
+      jest.spyOn(hashService, 'compare').mockResolvedValue(true);
 
       const actual = await authService.validateUser(
         user.username,
@@ -95,6 +108,7 @@ describe('AuthService', () => {
       const user = getMockUser();
       jest.spyOn(userService, 'findOne').mockResolvedValue(null);
       jest.spyOn(userService, 'findOneByEmail').mockResolvedValue(user);
+      jest.spyOn(hashService, 'compare').mockResolvedValue(false);
 
       await expect(
         authService.validateUser(

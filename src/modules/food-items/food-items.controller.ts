@@ -6,6 +6,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -69,7 +70,7 @@ export class FoodItemsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<FoodItem> {
+  async findOne(@Param('id',ParseUUIDPipe) id: string): Promise<FoodItem> {
     const foodItem = await this.foodItemsService.findOne(id);
     if (!foodItem) {
       throw new NotFoundException(`foodItem: ${id} does not exist`);
@@ -82,7 +83,7 @@ export class FoodItemsController {
   @UseGuards(AuthGaurd, RolesGuard)
   @UseInterceptors(FileInterceptor('image'))
   async update(
-    @Param('id') id: string,
+    @Param('id',ParseUUIDPipe) id: string,
     @Body(UpdateFoodItemValidator) foodItem: UpdateFoodItemDto,
     @UploadedFile() imageFile?: Express.Multer.File,
   ): Promise<FoodItem> {
@@ -100,7 +101,7 @@ export class FoodItemsController {
   @Delete(':id')
   @Roles(Role.CHEF)
   @UseGuards(AuthGaurd, RolesGuard)
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id',ParseUUIDPipe) id: string): Promise<void> {
     const isDeleted = await this.foodItemsService.remove(id);
     if (!isDeleted)
       throw new NotFoundException(`foodItem: ${id} does not exist`);

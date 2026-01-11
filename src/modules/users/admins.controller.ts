@@ -17,9 +17,11 @@ import { AuthGaurd } from '../../gurds/auth.guard';
 import { Roles } from 'src/gurds/roles.decorator';
 import { Role } from 'src/gurds/role.enum';
 import { RolesGuard } from 'src/gurds/roles.guard';
-import { UserValidator } from './pipe/userValidator.pipe';
+import { CreateUserValidator, UpdateUserValidator } from './pipe/userValidator.pipe';
 import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto.';
-import { UserInterceptor } from './interceptor/users.interceptor';
+import { UserInterceptor } from './interceptor/user.interceptor';
+import { User } from './entities/user.entity';
+import { UsersInterceptor } from './interceptor/users.interceptor';
 
 @Controller('admin/users')
 @UseGuards(AuthGaurd, RolesGuard)
@@ -28,7 +30,7 @@ export class AdminsController {
 
   @Post()
   @Roles(Role.ADMIN)
-  @UsePipes(UserValidator)
+  @UsePipes(CreateUserValidator)
   @UseInterceptors(UserInterceptor)
   async create(@Body() user: CreateUserDto): Promise<ClientUserDto> {
     const addedUser = await this.usersService.create(user);
@@ -39,14 +41,15 @@ export class AdminsController {
   }
 
   @Get()
-  findAll(): Promise<ClientUserDto[]> {
+  @UseInterceptors(UsersInterceptor)
+  findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
   @Get(':username')
   @Roles(Role.CHEF)
   @UseInterceptors(UserInterceptor)
-  async findOne(@Param('username') username: string): Promise<ClientUserDto> {
+  async findOne(@Param('username') username: string): Promise<User> {
     const user = await this.usersService.findOne(username);
     if (!user) throw new NotFoundException(`user: ${username} does not exist`);
 
@@ -55,12 +58,12 @@ export class AdminsController {
 
   @Put(':username')
   @Roles(Role.CHEF)
-  // @UsePipes(UserValidator)
+  @UsePipes(UpdateUserValidator)
   @UseInterceptors(UserInterceptor)
   async update(
     @Param('username') username: string,
     @Body() user: UpdateUserDto,
-  ): Promise<ClientUserDto> {
+  ): Promise<User> {
     const updatedUser = await this.usersService.update(username, user);
     if (!updatedUser)
       throw new NotFoundException(`user: ${username} does not exist`);

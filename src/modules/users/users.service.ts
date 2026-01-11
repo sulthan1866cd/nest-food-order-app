@@ -9,6 +9,7 @@ import { type IRepository } from 'src/interface/repository.interface';
 import { type IAuthService } from 'src/interface/authService.interface';
 import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto.';
 import { Role } from 'src/gurds/role.enum';
+import { HashService } from '../auth/hash.service';
 
 @Injectable()
 export class UsersService {
@@ -17,10 +18,12 @@ export class UsersService {
     private readonly userRepo: IRepository<User>,
     @Inject(forwardRef(() => 'AuthService'))
     private readonly authService: IAuthService,
+    private readonly hashService: HashService,
   ) {}
 
   async create(user: CreateUserDto): Promise<ClientUserDto | null> {
     if (await this.isExists(user)) return null;
+    user.password = await this.hashService.hash(user.password);
     const newUser = (await this.userRepo.create(user)) as User;
     const authorization = this.authService.generateToken(newUser);
     return { ...newUser, authorization };
@@ -60,7 +63,7 @@ export class UsersService {
       )
         throw new ConflictException('Email already exists for another user');
     }
-    return await this.userRepo.update(newUser);
+    return await this.userRepo.update({ ...newUser, id: existingUser.id });
   }
 
   async updateCustomer(
@@ -80,12 +83,18 @@ export class UsersService {
       )
         throw new ConflictException('Email already exists for another user');
     }
-    return await this.userRepo.update(newUser);
+    return await this.userRepo.update({...newUser, role: Role.CUSTOMER,id: existingUser.id });
   }
 
   async remove(username: string): Promise<boolean> {
     if (!(await this.isExists(username))) return false;
     await this.userRepo.deleteBy({ username });
+    return true;
+  }
+
+   async removeCustomer(username: string): Promise<boolean> {
+    if (!(await this.findOneCustomer(username))) return false;
+    await this.userRepo.deleteBy({ username, role: Role.CUSTOMER });
     return true;
   }
 
@@ -96,7 +105,7 @@ export class UsersService {
     return (await this.findAll()).some(
       (user) =>
         user.username === checkUser.username ||
-        // (checkUser instanceof User && user.id === checkUser.id) ||
+        (user.id === checkUser['id']) ||
         user.email === checkUser.email,
     );
   }

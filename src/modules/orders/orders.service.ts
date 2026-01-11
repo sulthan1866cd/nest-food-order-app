@@ -35,11 +35,6 @@ export class OrdersService {
     return this.orderRepo.findBy({ username });
   }
 
-  // async update(id: string, order: Order): Promise<Order | null> {
-  //   if (!(await this.isExists(id))) return null;
-  //   return this.orderRepo.update({ ...order, id });
-  // }
-
   async remove(id: string): Promise<boolean> {
     if (!(await this.isExists(id))) return false;
     await this.orderRepo.deleteBy({ id });

@@ -10,7 +10,7 @@ import {
 import { type IAuthService } from 'src/interface/authService.interface';
 import { User } from '../users/entities/user.entity';
 import { ClientUserDto } from '../users/dto/users.dto.';
-import { UserInterceptor } from '../users/interceptor/users.interceptor';
+import { UserInterceptor } from '../users/interceptor/user.interceptor';
 
 @Controller('auth')
 @UseInterceptors(UserInterceptor)

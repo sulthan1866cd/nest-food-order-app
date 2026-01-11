@@ -5,10 +5,10 @@ import {
   Body,
   Param,
   Delete,
-  // Put,
   UsePipes,
   NotFoundException,
   UseGuards,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { Order } from './entities/order.entity';
@@ -45,18 +45,8 @@ export class OrdersController {
     return this.ordersService.findByUsername(username);
   }
 
-  // @Put(':id')
-  // @UsePipes(OrderValidator)
-  // async update(@Param('id') id: string, @Body() order: Order) {
-  //   const updatedOrder = await this.ordersService.update(id, order);
-  //   if (!updatedOrder) {
-  //     throw new NotFoundException(`order: ${id} does not exist`);
-  //   }
-  //   return updatedOrder;
-  // }
-
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id',ParseUUIDPipe) id: string): Promise<void> {
     const isDeleted = await this.ordersService.remove(id);
     if (!isDeleted) throw new NotFoundException(`order: ${id} does not exist`);
   }

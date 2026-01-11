@@ -40,7 +40,7 @@ export class BaseMockRepository<
     );
   }
 
-  async update(entity: Partial<T>): Promise<T | null> {
+  async update(entity: Partial<T> & { id: string }): Promise<T | null> {
     const fullEntity = await this.findOneBy({ id: entity.id } as T);
     if (!fullEntity) return null;
     for (const key in entity) {

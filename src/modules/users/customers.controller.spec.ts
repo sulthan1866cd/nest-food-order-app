@@ -19,6 +19,7 @@ describe('CustomersController', () => {
             createCustomer: jest.fn(),
             findOneCustomer: jest.fn(),
             updateCustomer: jest.fn(),
+            removeCustomer: jest.fn(),
           },
         },
         { provide: 'AuthService', useValue: {} },
@@ -135,6 +136,30 @@ describe('CustomersController', () => {
         customersController.update(user.username, updateUser),
       ).rejects.toThrow(NotFoundException);
       expect(updateCustomerFn).toHaveBeenCalledWith(user.username, updateUser);
+    });
+  });
+
+  describe('remove()', () => {
+    it('should remove customer', async () => {
+      const user = getMockUser();
+      const removeCustomerFn = jest
+        .spyOn(usersService, 'removeCustomer')
+        .mockResolvedValue(true);
+
+      await customersController.remove(user.username);
+      expect(removeCustomerFn).toHaveBeenCalledWith(user.username);
+    });
+
+    it('should throw exception if customer dosent exists', async () => {
+      const user = getMockUser();
+      const removeCustomerFn = jest
+        .spyOn(usersService, 'removeCustomer')
+        .mockResolvedValue(false);
+
+      await expect(customersController.remove(user.username)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(removeCustomerFn).toHaveBeenCalledWith(user.username);
     });
   });
 });

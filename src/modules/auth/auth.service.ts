@@ -9,11 +9,13 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { HashService } from './hash.service';
 
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
     private readonly jwtService: JwtService,
+    private readonly hashService: HashService,
     @Inject(forwardRef(() => UsersService))
     private readonly userService: UsersService,
   ) {}
@@ -39,7 +41,8 @@ export class AuthService implements IAuthService {
       (await this.userService.findOne(username)) ||
       (await this.userService.findOneByEmail(email));
     if (!user) throw new NotFoundException(`user: ${username} not found`);
-    if (user.password !== password) throw new UnauthorizedException(); // bad code
+    const isPasswordValid = await this.hashService.compare(password, user.password);
+    if (!isPasswordValid) throw new UnauthorizedException();
     return user;
   }
 }

@@ -40,8 +40,7 @@ export class S3ClientService implements IS3ClientService {
         return this.s3Client.send(new CreateBucketCommand({ Bucket }));
       return null;
     } catch {
-      //hard debug bad code
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException('Failed to create bucket');
     }
   }
 
@@ -58,8 +57,7 @@ export class S3ClientService implements IS3ClientService {
       );
       return getSignedUrl(this.s3Client, new GetObjectCommand({ Bucket, Key }));
     } catch {
-      //hard debug bad code
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException('Failed to upload file');
     }
   }
 
@@ -72,8 +70,7 @@ export class S3ClientService implements IS3ClientService {
     try {
       return this.s3Client.send(new DeleteObjectCommand({ Bucket, Key }));
     } catch {
-      //hard debug bad code
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException('Failed to delete file');
     }
   }
 }
