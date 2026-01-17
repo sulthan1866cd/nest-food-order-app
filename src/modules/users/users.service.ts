@@ -59,9 +59,12 @@ export class UsersService {
       );
       if (
         existingUserWithCurrentEmail &&
-        existingUserWithCurrentEmail?.username !== username
+        existingUserWithCurrentEmail.username !== username
       )
         throw new ConflictException('Email already exists for another user');
+    }
+    if (user.password) {
+      newUser.password = await this.hashService.hash(user.password);
     }
     return await this.userRepo.update({ ...newUser, id: existingUser.id });
   }
@@ -79,11 +82,18 @@ export class UsersService {
       );
       if (
         existingUserWithCurrentEmail &&
-        existingUserWithCurrentEmail?.username !== username
+        existingUserWithCurrentEmail.username !== username
       )
         throw new ConflictException('Email already exists for another user');
     }
-    return await this.userRepo.update({...newUser, role: Role.CUSTOMER,id: existingUser.id });
+    if (user.password) {
+      newUser.password = await this.hashService.hash(user.password);
+    }
+    return await this.userRepo.update({
+      ...newUser,
+      role: Role.CUSTOMER,
+      id: existingUser.id,
+    });
   }
 
   async remove(username: string): Promise<boolean> {
@@ -92,7 +102,7 @@ export class UsersService {
     return true;
   }
 
-   async removeCustomer(username: string): Promise<boolean> {
+  async removeCustomer(username: string): Promise<boolean> {
     if (!(await this.findOneCustomer(username))) return false;
     await this.userRepo.deleteBy({ username, role: Role.CUSTOMER });
     return true;
@@ -105,7 +115,7 @@ export class UsersService {
     return (await this.findAll()).some(
       (user) =>
         user.username === checkUser.username ||
-        (user.id === checkUser['id']) ||
+        user.id === checkUser['id'] ||
         user.email === checkUser.email,
     );
   }
