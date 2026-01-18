@@ -11,7 +11,7 @@ export class Validator<T> implements PipeTransform<Partial<T>, T> {
   }
 
   protected getObjectStructure = (ref: T) => {
-    const obj: any = {};
+    const obj: Record<string, unknown> = {};
     for (const key in ref) {
       if (typeof ref[key] === 'object')
         obj[key] = this.getObjectStructure(ref[key] as T);

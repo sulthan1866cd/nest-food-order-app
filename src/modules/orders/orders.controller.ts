@@ -18,6 +18,7 @@ import { Roles } from 'src/gurds/roles.decorator';
 import { Role } from 'src/gurds/role.enum';
 import { RolesGuard } from 'src/gurds/roles.guard';
 import { CreateOrderDto } from './dto/orders.dto';
+import { type UUID } from 'crypto';
 
 @Controller('orders')
 @UseGuards(AuthGaurd)
@@ -46,7 +47,7 @@ export class OrdersController {
   }
 
   @Delete(':id')
-  async remove(@Param('id',ParseUUIDPipe) id: string): Promise<void> {
+  async remove(@Param('id', ParseUUIDPipe) id: UUID): Promise<void> {
     const isDeleted = await this.ordersService.remove(id);
     if (!isDeleted) throw new NotFoundException(`order: ${id} does not exist`);
   }

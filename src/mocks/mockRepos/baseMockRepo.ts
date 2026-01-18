@@ -1,8 +1,8 @@
-import { randomUUID } from 'crypto';
+import { randomUUID, UUID } from 'crypto';
 import { IRepository } from 'src/interface/repository.interface';
 
 export class BaseMockRepository<
-  T extends { id: string },
+  T extends { id: UUID },
 > implements IRepository<T> {
   protected mocks: Promise<T[]>;
 
@@ -40,11 +40,11 @@ export class BaseMockRepository<
     );
   }
 
-  async update(entity: Partial<T> & { id: string }): Promise<T | null> {
+  async update(entity: Partial<T> & { id: UUID }): Promise<T | null> {
     const fullEntity = await this.findOneBy({ id: entity.id } as T);
     if (!fullEntity) return null;
     for (const key in entity) {
-      if (entity[key]) fullEntity[key] = entity[key];
+      if (entity[key]) fullEntity[key] = entity[key] as unknown;
     }
     const newMocks = (await this.mocks).map((mock) => {
       if (mock.id === fullEntity.id) return fullEntity;

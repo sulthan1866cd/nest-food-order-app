@@ -66,34 +66,16 @@ export class UsersService {
     if (user.password) {
       newUser.password = await this.hashService.hash(user.password);
     }
-    return await this.userRepo.update({ ...newUser, id: existingUser.id });
+    return this.userRepo.update({ ...newUser, id: existingUser.id });
   }
 
   async updateCustomer(
     username: string,
     user: UpdateUserDto,
   ): Promise<User | null> {
-    const newUser = { ...user, username };
     const existingUser = await this.findOneCustomer(username);
     if (!existingUser) return null;
-    if (user.email) {
-      const existingUserWithCurrentEmail = await this.findOneByEmail(
-        user.email,
-      );
-      if (
-        existingUserWithCurrentEmail &&
-        existingUserWithCurrentEmail.username !== username
-      )
-        throw new ConflictException('Email already exists for another user');
-    }
-    if (user.password) {
-      newUser.password = await this.hashService.hash(user.password);
-    }
-    return await this.userRepo.update({
-      ...newUser,
-      role: Role.CUSTOMER,
-      id: existingUser.id,
-    });
+    return this.update(username, user);
   }
 
   async remove(username: string): Promise<boolean> {

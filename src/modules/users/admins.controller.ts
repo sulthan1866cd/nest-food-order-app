@@ -17,7 +17,10 @@ import { AuthGaurd } from '../../gurds/auth.guard';
 import { Roles } from 'src/gurds/roles.decorator';
 import { Role } from 'src/gurds/role.enum';
 import { RolesGuard } from 'src/gurds/roles.guard';
-import { CreateUserValidator, UpdateUserValidator } from './pipe/userValidator.pipe';
+import {
+  CreateUserValidator,
+  UpdateUserValidator,
+} from './pipe/userValidator.pipe';
 import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto.';
 import { UserInterceptor } from './interceptor/user.interceptor';
 import { User } from './entities/user.entity';

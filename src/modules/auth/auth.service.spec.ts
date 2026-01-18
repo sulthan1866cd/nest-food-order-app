@@ -3,11 +3,7 @@ import { IAuthService } from 'src/interface/authService.interface';
 import { UsersService } from '../users/users.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import {
-  getMockUser,
-  getOriginalPassword,
-  mockUsers,
-} from 'src/mocks/mockDatas/users.stub';
+import { getMockUser } from 'src/mocks/mockDatas/users.stub';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { HashService } from './hash.service';
 

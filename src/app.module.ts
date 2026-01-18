@@ -21,7 +21,7 @@ export class AppModule implements NestModule {
     @Inject('S3ClientService')
     private readonly s3ClientService: IS3ClientService,
   ) {
-    s3ClientService.createBucket();
+    this.s3ClientService.createBucket();
   }
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');

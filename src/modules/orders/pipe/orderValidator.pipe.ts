@@ -6,7 +6,7 @@ export class OrderValidator extends Validator<CreateOrderDto> {
   constructor() {
     super({
       username: '',
-      foodItemId: '',
+      foodItemId: '1-1-1-1-1',
       quantity: 0,
       time: new Date(),
     });
@@ -16,7 +16,7 @@ export class OrderValidator extends Validator<CreateOrderDto> {
       throw new BadRequestException(
         `No body found, expected body of type: ${this.getObjectStructure({
           username: '',
-          foodItemId: '',
+          foodItemId: '1-1-1-1-1',
           quantity: 0,
           time: new Date(),
         })}`,

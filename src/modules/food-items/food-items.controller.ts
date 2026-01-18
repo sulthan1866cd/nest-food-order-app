@@ -26,6 +26,7 @@ import {
 } from './pipe/foodItemValidator.pipe';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateFoodItemDto, UpdateFoodItemDto } from './dto/food-item.dto';
+import { type UUID } from 'crypto';
 
 @Controller('food-items')
 export class FoodItemsController {
@@ -70,7 +71,7 @@ export class FoodItemsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id',ParseUUIDPipe) id: string): Promise<FoodItem> {
+  async findOne(@Param('id', ParseUUIDPipe) id: UUID): Promise<FoodItem> {
     const foodItem = await this.foodItemsService.findOne(id);
     if (!foodItem) {
       throw new NotFoundException(`foodItem: ${id} does not exist`);
@@ -83,7 +84,7 @@ export class FoodItemsController {
   @UseGuards(AuthGaurd, RolesGuard)
   @UseInterceptors(FileInterceptor('image'))
   async update(
-    @Param('id',ParseUUIDPipe) id: string,
+    @Param('id', ParseUUIDPipe) id: UUID,
     @Body(UpdateFoodItemValidator) foodItem: UpdateFoodItemDto,
     @UploadedFile() imageFile?: Express.Multer.File,
   ): Promise<FoodItem> {
@@ -101,7 +102,7 @@ export class FoodItemsController {
   @Delete(':id')
   @Roles(Role.CHEF)
   @UseGuards(AuthGaurd, RolesGuard)
-  async remove(@Param('id',ParseUUIDPipe) id: string): Promise<void> {
+  async remove(@Param('id', ParseUUIDPipe) id: UUID): Promise<void> {
     const isDeleted = await this.foodItemsService.remove(id);
     if (!isDeleted)
       throw new NotFoundException(`foodItem: ${id} does not exist`);

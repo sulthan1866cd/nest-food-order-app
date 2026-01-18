@@ -4,6 +4,7 @@ import { type IRepository } from 'src/interface/repository.interface';
 import { OrdersService } from '../orders/orders.service';
 import { type IS3ClientService } from 'src/interface/s3ClientService.interface';
 import { CreateFoodItemDto, UpdateFoodItemDto } from './dto/food-item.dto';
+import { UUID } from 'crypto';
 
 interface FindAllByParams {
   searchQuery?: string;
@@ -55,12 +56,12 @@ export class FoodItemsService {
     return orders.map((order) => order.foodItem);
   }
 
-  findOne(id: string): Promise<FoodItem | null> {
+  findOne(id: UUID): Promise<FoodItem | null> {
     return this.foodItemRepo.findOneBy({ id });
   }
 
   async update(
-    id: string,
+    id: UUID,
     foodItem: UpdateFoodItemDto,
     imageFile?: Express.Multer.File,
   ): Promise<FoodItem | null> {
@@ -71,7 +72,7 @@ export class FoodItemsService {
     return this.foodItemRepo.update({ ...foodItem, id, image: url });
   }
 
-  async remove(id: string): Promise<boolean> {
+  async remove(id: UUID): Promise<boolean> {
     if (!(await this.isExists(id))) return false;
     await this.s3ClientService.delete(id);
     await this.foodItemRepo.deleteBy({ id });

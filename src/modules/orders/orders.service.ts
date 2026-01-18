@@ -3,6 +3,7 @@ import { Order } from './entities/order.entity';
 import { type IRepository } from 'src/interface/repository.interface';
 import { UsersService } from '../users/users.service';
 import { CreateOrderDto } from './dto/orders.dto';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class OrdersService {
@@ -19,7 +20,7 @@ export class OrdersService {
       foodItemId: order.foodItemId,
     });
     if (previousOrder)
-      return await this.orderRepo.update({
+      return this.orderRepo.update({
         ...previousOrder,
         quantity: previousOrder.quantity + order.quantity,
       });
@@ -35,13 +36,13 @@ export class OrdersService {
     return this.orderRepo.findBy({ username });
   }
 
-  async remove(id: string): Promise<boolean> {
+  async remove(id: UUID): Promise<boolean> {
     if (!(await this.isExists(id))) return false;
     await this.orderRepo.deleteBy({ id });
     return true;
   }
 
-  private async isExists(id: string): Promise<boolean> {
+  private async isExists(id: UUID): Promise<boolean> {
     return (await this.findAll()).some((order) => order.id === id);
   }
 }

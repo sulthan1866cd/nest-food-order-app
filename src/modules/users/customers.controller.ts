@@ -14,7 +14,10 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGaurd } from '../../gurds/auth.guard';
-import { CreateUserValidator, UpdateUserValidator } from './pipe/userValidator.pipe';
+import {
+  CreateUserValidator,
+  UpdateUserValidator,
+} from './pipe/userValidator.pipe';
 import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto.';
 import { UserInterceptor } from './interceptor/user.interceptor';
 import { User } from './entities/user.entity';
