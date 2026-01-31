@@ -31,6 +31,7 @@ describe('UsersService', () => {
             findOneBy: jest.fn(),
             update: jest.fn(),
             deleteBy: jest.fn(),
+            isExists: jest.fn(),
           },
         },
         { provide: 'AuthService', useValue: { generateToken: jest.fn() } },
@@ -151,6 +152,25 @@ describe('UsersService', () => {
 
       expect(actual).toEqual(user);
       expect(findOneByFn).toHaveBeenCalledWith({ email: user.email });
+    });
+  });
+
+  describe('findOneByUsernameOrEmail()', () => {
+    it('should return user if found by username or email', async () => {
+      const user = getMockUser();
+      const findOneByFn = jest
+        .spyOn(userRepo, 'findOneBy')
+        .mockResolvedValue(user);
+      const actual = await userService.findOneByUsernameOrEmail(
+        user.username,
+        user.email,
+      );
+
+      expect(actual).toEqual(user);
+      expect(findOneByFn).toHaveBeenCalledWith(
+        { username: user.username, email: user.email },
+        true,
+      );
     });
   });
 
@@ -296,7 +316,7 @@ describe('UsersService', () => {
   describe('isExists()', () => {
     it('should return true if user of username exist', async () => {
       const username = getMockUser().username;
-      jest.spyOn(userService, 'findAll').mockResolvedValue(mockUsers);
+      jest.spyOn(userRepo, 'isExists').mockResolvedValue(true);
 
       const actual = await userService.isExists(username);
       expect(actual).toBe(true);
@@ -304,7 +324,7 @@ describe('UsersService', () => {
 
     it('should return false if user of username dosent exist', async () => {
       const username = 'random uusenaem';
-      jest.spyOn(userService, 'findAll').mockResolvedValue(mockUsers);
+      jest.spyOn(userRepo, 'isExists').mockResolvedValue(false);
 
       const actual = await userService.isExists(username);
       expect(actual).toBe(false);
@@ -312,7 +332,7 @@ describe('UsersService', () => {
 
     it('should return true if user of username of user exist', async () => {
       const user = getMockUser();
-      jest.spyOn(userService, 'findAll').mockResolvedValue(mockUsers);
+      jest.spyOn(userRepo, 'isExists').mockResolvedValue(true);
 
       const actual = await userService.isExists({
         ...user,
@@ -324,7 +344,7 @@ describe('UsersService', () => {
 
     it('should return true if user of email of user exist', async () => {
       const user = getMockUser();
-      jest.spyOn(userService, 'findAll').mockResolvedValue(mockUsers);
+      jest.spyOn(userRepo, 'isExists').mockResolvedValue(true);
 
       const actual = await userService.isExists({
         ...user,
@@ -336,7 +356,7 @@ describe('UsersService', () => {
 
     it('should return true if user of id of user exist', async () => {
       const user = getMockUser();
-      jest.spyOn(userService, 'findAll').mockResolvedValue(mockUsers);
+      jest.spyOn(userRepo, 'isExists').mockResolvedValue(true);
 
       const actual = await userService.isExists({
         ...user,
@@ -348,7 +368,7 @@ describe('UsersService', () => {
 
     it('should return false if user dosent exist', async () => {
       const user = getMockUser();
-      jest.spyOn(userService, 'findAll').mockResolvedValue(mockUsers);
+      jest.spyOn(userRepo, 'isExists').mockResolvedValue(false);
 
       const actual = await userService.isExists({
         ...user,

@@ -26,6 +26,7 @@ describe('OrdersService', () => {
             findBy: jest.fn(),
             findOneBy: jest.fn(),
             deleteBy: jest.fn(),
+            isExists: jest.fn(),
           },
         },
       ],
@@ -124,7 +125,7 @@ describe('OrdersService', () => {
   describe('remove', () => {
     it('should return true if order deleted', async () => {
       const id = getMockOrder().id;
-      jest.spyOn(orderRepo, 'findBy').mockResolvedValue(mockOrders);
+      jest.spyOn(orderRepo, 'isExists').mockResolvedValue(true);
       const deleteByFn = jest.spyOn(orderRepo, 'deleteBy');
       const actual = await ordersService.remove(id);
       expect(actual).toBe(true);
@@ -132,7 +133,7 @@ describe('OrdersService', () => {
     });
     it('should return false if order dosent exist', async () => {
       const id = randomUUID();
-      jest.spyOn(orderRepo, 'findBy').mockResolvedValue(mockOrders);
+      jest.spyOn(orderRepo, 'isExists').mockResolvedValue(false);
       const deleteByFn = jest.spyOn(orderRepo, 'deleteBy');
       const actual = await ordersService.remove(id);
       expect(actual).toBe(false);

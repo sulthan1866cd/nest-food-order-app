@@ -23,7 +23,7 @@ describe('AuthService', () => {
         },
         {
           provide: UsersService,
-          useValue: { findOne: jest.fn(), findOneByEmail: jest.fn() },
+          useValue: { findOneByUsernameOrEmail: jest.fn() },
         },
         {
           provide: HashService,
@@ -79,7 +79,9 @@ describe('AuthService', () => {
   describe('validateUser()', () => {
     it('should validate and return user', async () => {
       const user = getMockUser();
-      jest.spyOn(userService, 'findOne').mockResolvedValue(user);
+      jest
+        .spyOn(userService, 'findOneByUsernameOrEmail')
+        .mockResolvedValue(user);
       jest.spyOn(hashService, 'compare').mockResolvedValue(true);
 
       const actual = await authService.validateUser(
@@ -92,8 +94,9 @@ describe('AuthService', () => {
 
     it('should throw exception if user dosent exist', async () => {
       const user = getMockUser();
-      jest.spyOn(userService, 'findOne').mockResolvedValue(null);
-      jest.spyOn(userService, 'findOneByEmail').mockResolvedValue(null);
+      jest
+        .spyOn(userService, 'findOneByUsernameOrEmail')
+        .mockResolvedValue(null);
 
       await expect(
         authService.validateUser(user.username, user.email, user.password),
@@ -102,8 +105,9 @@ describe('AuthService', () => {
 
     it('should throw exception if invalid password', async () => {
       const user = getMockUser();
-      jest.spyOn(userService, 'findOne').mockResolvedValue(null);
-      jest.spyOn(userService, 'findOneByEmail').mockResolvedValue(user);
+      jest
+        .spyOn(userService, 'findOneByUsernameOrEmail')
+        .mockResolvedValue(user);
       jest.spyOn(hashService, 'compare').mockResolvedValue(false);
 
       await expect(
