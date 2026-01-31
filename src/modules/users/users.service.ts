@@ -45,6 +45,13 @@ export class UsersService {
     return this.userRepo.findOneBy({ email });
   }
 
+  findOneByUsernameOrEmail(
+    username: string,
+    email: string,
+  ): Promise<User | null> {
+    return this.userRepo.findOneBy({ username, email }, true);
+  }
+
   findOneCustomer(username: string) {
     return this.userRepo.findOneBy({ username, role: Role.CUSTOMER });
   }
@@ -90,15 +97,17 @@ export class UsersService {
     return true;
   }
 
-  async isExists(checkUser: User | CreateUserDto | string): Promise<boolean> {
+  isExists(checkUser: User | CreateUserDto | string): Promise<boolean> {
     if (typeof checkUser === 'string')
-      return (await this.findAll()).some((user) => user.username === checkUser);
+      return this.userRepo.isExists({ username: checkUser });
 
-    return (await this.findAll()).some(
-      (user) =>
-        user.username === checkUser.username ||
-        user.id === checkUser['id'] ||
-        user.email === checkUser.email,
+    return this.userRepo.isExists(
+      {
+        username: checkUser.username,
+        email: checkUser.email,
+        id: 'id' in checkUser ? checkUser.id : undefined,
+      },
+      true,
     );
   }
 }

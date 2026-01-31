@@ -24,7 +24,7 @@ export class UserInterceptor implements NestInterceptor<
         fullName: user.fullName,
         id: user.id,
         role: user.role,
-        authorization: user['authorization'] as string,
+        authorization: 'authorization' in user ? user.authorization : undefined,
       })),
     );
   }

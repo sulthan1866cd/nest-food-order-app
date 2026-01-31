@@ -5,9 +5,11 @@ import {
 } from '@nestjs/common';
 
 export class Validator<T> implements PipeTransform<Partial<T>, T> {
-  private ref: T;
+  protected ref: T;
+  protected refStructure: T;
   constructor(ref: T) {
     this.ref = ref;
+    this.refStructure = JSON.parse(this.getObjectStructure(ref)) as T;
   }
 
   protected getObjectStructure = (ref: T) => {
@@ -17,22 +19,26 @@ export class Validator<T> implements PipeTransform<Partial<T>, T> {
         obj[key] = this.getObjectStructure(ref[key] as T);
       else obj[key] = typeof ref[key];
     }
-    return JSON.stringify(obj).replaceAll('"', '');
+    return JSON.stringify(obj);
   };
 
-  private validateObject(value: Partial<T>, ref: Partial<T>, path = 'body') {
+  protected validateObject(value: Partial<T>, ref: Partial<T>, path = 'body') {
     for (const key in ref) {
       if (!value[key])
-        throw new BadRequestException(
-          `Incomplete request object, missing key: ${path}.${key}`,
-        );
+        throw new BadRequestException({
+          error: 'Incomplete request object',
+          expected: this.refStructure,
+          missingKey: `${path}.${key}`,
+        });
+
       if (typeof value[key] !== typeof ref[key])
-        throw new BadRequestException(
-          `Incorrect request object type=> 
-            key: ${path}.${key}, 
-            Expected type: ${typeof ref[key]}, 
-            Actual type: ${typeof value[key]}`,
-        );
+        throw new BadRequestException({
+          error: 'Incorrect request object type',
+          expected: this.refStructure,
+          incorrectKey: `${path}.${key}`,
+          expectedType: typeof ref[key],
+          actualType: typeof value[key],
+        });
 
       if (typeof value[key] === 'object')
         this.validateObject(
@@ -46,9 +52,10 @@ export class Validator<T> implements PipeTransform<Partial<T>, T> {
   transform(value: Partial<T>, metadata: ArgumentMetadata): T {
     if (metadata.type !== 'body') return value as T;
     if (!value)
-      throw new BadRequestException(
-        `no body found, expected body of type: ${this.getObjectStructure(this.ref)}`,
-      );
+      throw new BadRequestException({
+        error: 'No body found',
+        expected: this.refStructure,
+      });
     this.validateObject(value, this.ref);
     return value as T;
   }

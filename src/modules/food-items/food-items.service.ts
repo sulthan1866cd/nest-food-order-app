@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { FoodItem } from './entities/food-item.entity';
 import { type IRepository } from 'src/interface/repository.interface';
 import { OrdersService } from '../orders/orders.service';
@@ -66,6 +66,11 @@ export class FoodItemsService {
     imageFile?: Express.Multer.File,
   ): Promise<FoodItem | null> {
     if (!(await this.isExists(id))) return null;
+    const existingFoodItemWithName = await this.foodItemRepo.findOneBy({
+      name: foodItem.name,
+    });
+    if (existingFoodItemWithName && existingFoodItemWithName.id !== id)
+      throw new ConflictException(`Food item: ${foodItem.name} already exists`);
     const url = imageFile
       ? await this.s3ClientService.upload(id, imageFile.buffer)
       : undefined;
@@ -79,10 +84,10 @@ export class FoodItemsService {
     return true;
   }
 
-  private async isExists(checkFoodItem: string): Promise<boolean> {
-    return (await this.findAll()).some(
-      (foodItem) =>
-        foodItem.id === checkFoodItem || foodItem.name === checkFoodItem,
+  private isExists(checkFoodItem: string): Promise<boolean> {
+    return this.foodItemRepo.isExists(
+      { name: checkFoodItem, id: checkFoodItem as UUID },
+      true,
     );
   }
 

@@ -37,9 +37,10 @@ export class AuthService implements IAuthService {
     email: string,
     password: string,
   ): Promise<User> {
-    const user =
-      (await this.userService.findOne(username)) ||
-      (await this.userService.findOneByEmail(email));
+    const user = await this.userService.findOneByUsernameOrEmail(
+      username,
+      email,
+    );
     if (!user) throw new NotFoundException(`user: ${username} not found`);
     const isPasswordValid = await this.hashService.compare(
       password,

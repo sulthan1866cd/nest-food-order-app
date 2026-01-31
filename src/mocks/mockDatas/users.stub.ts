@@ -6,7 +6,7 @@ export const mockUsers: User[] = [
   {
     id: randomUUID(),
     username: 'ironwolf',
-    password: '$2a$12$NvQP4dNbkM5vw2lsYRefm.WdYZAw9OeDEktN4NVOYXlfb7UYQcuA2',
+    password: '$2a$12$NvQP4dNbkM5vw2lsYRefm.WdYZAw9OeDEktN4NVOYXlfb7UYQcuA2', // original password: ironwolf1
     fullName: 'Arjun Mehta',
     email: 'arjun.mehta@example.com',
     role: Role.CUSTOMER,
@@ -14,7 +14,7 @@ export const mockUsers: User[] = [
   {
     id: randomUUID(),
     username: 'skyhawk',
-    password: '$2a$12$ZLg9kdVm3yLcMfIAQKOa5Ooz4zZI/FPULnS/RdJwqIRIEik.leHoq',
+    password: '$2a$12$ZLg9kdVm3yLcMfIAQKOa5Ooz4zZI/FPULnS/RdJwqIRIEik.leHoq', // original password: skyhawk2
     fullName: 'Priya Nair',
     email: 'priya.nair@example.com',
     role: Role.ADMIN,
@@ -22,7 +22,7 @@ export const mockUsers: User[] = [
   {
     id: randomUUID(),
     username: 'nightcoder',
-    password: '$2a$12$.tFazz2iwWMSWS5Ty1S/b.FILAs8DTV36f0ZDkLH2k2ih.0S1C7iO',
+    password: '$2a$12$.tFazz2iwWMSWS5Ty1S/b.FILAs8DTV36f0ZDkLH2k2ih.0S1C7iO', // original password: nightcoder3
     fullName: 'Rohit Sharma',
     email: 'rohit.sharma@example.com',
     role: Role.CHEF,
@@ -30,7 +30,7 @@ export const mockUsers: User[] = [
   {
     id: randomUUID(),
     username: 'pixelqueen',
-    password: '$2a$12$SovzyWZlrxiRHHewP/jMiuvdZ/eZsZWzrZj44bDRFkpLnXu8F3ZGm',
+    password: '$2a$12$SovzyWZlrxiRHHewP/jMiuvdZ/eZsZWzrZj44bDRFkpLnXu8F3ZGm', // original password: pixelqueen4
     fullName: 'Sara Thomas',
     email: 'sara.thomas@example.com',
     role: Role.CHEF,
@@ -38,7 +38,7 @@ export const mockUsers: User[] = [
   {
     id: randomUUID(),
     username: 'bytecrunch',
-    password: '$2a$12$4adIWGhUUg0I07SqQF98d.yGlS1A4ly7puBryJOiKuJX0.DsuYB1a',
+    password: '$2a$12$4adIWGhUUg0I07SqQF98d.yGlS1A4ly7puBryJOiKuJX0.DsuYB1a', // original password: bytecrunch5
     fullName: 'Kavin Reddy',
     email: 'kavin.reddy@example.com',
     role: Role.CUSTOMER,

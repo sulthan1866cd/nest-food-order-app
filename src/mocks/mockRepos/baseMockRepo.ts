@@ -19,23 +19,41 @@ export class BaseMockRepository<
     return this.findOneBy(entity);
   }
 
-  async findBy(where?: Partial<T>): Promise<T[]> {
+  async findBy(where?: Partial<T>, isOr?: boolean): Promise<T[]> {
     if (!where) return this.mocks;
     return (await this.mocks).filter((mock) => {
-      for (const key in where) {
-        if (mock[key] !== where[key]) return false;
-      }
-      return true;
-    });
-  }
-
-  async findOneBy(where: Partial<T>): Promise<T | null> {
-    return (
-      (await this.mocks).find((mock) => {
+      if (isOr) {
+        for (const key in where) {
+          if (mock[key] === where[key]) return true;
+        }
+        return false;
+      } else {
         for (const key in where) {
           if (mock[key] !== where[key]) return false;
         }
         return true;
+      }
+    });
+  }
+
+  async isExists(where: Partial<T>, isOr?: boolean): Promise<boolean> {
+    return !!(await this.findOneBy(where, isOr));
+  }
+
+  async findOneBy(where: Partial<T>, isOr?: boolean): Promise<T | null> {
+    return (
+      (await this.mocks).find((mock) => {
+        if (isOr) {
+          for (const key in where) {
+            if (mock[key] === where[key]) return true;
+          }
+          return false;
+        } else {
+          for (const key in where) {
+            if (mock[key] !== where[key]) return false;
+          }
+          return true;
+        }
       }) || null
     );
   }
@@ -44,7 +62,7 @@ export class BaseMockRepository<
     const fullEntity = await this.findOneBy({ id: entity.id } as T);
     if (!fullEntity) return null;
     for (const key in entity) {
-      if (entity[key]) fullEntity[key] = entity[key] as unknown;
+      if (entity[key]) fullEntity[key] = entity[key] as T[keyof T];
     }
     const newMocks = (await this.mocks).map((mock) => {
       if (mock.id === fullEntity.id) return fullEntity;
@@ -54,12 +72,19 @@ export class BaseMockRepository<
     return this.findOneBy(fullEntity);
   }
 
-  async deleteBy(where: Partial<T>): Promise<void> {
+  async deleteBy(where: Partial<T>, isOr?: boolean): Promise<void> {
     const newMocks = (await this.mocks).filter((mock) => {
-      for (const key in where) {
-        if (mock[key] !== where[key]) return true;
+      if (isOr) {
+        for (const key in where) {
+          if (mock[key] === where[key]) return false;
+        }
+        return true;
+      } else {
+        for (const key in where) {
+          if (mock[key] !== where[key]) return true;
+        }
+        return false;
       }
-      return false;
     });
     this.mocks = Promise.resolve(newMocks);
   }

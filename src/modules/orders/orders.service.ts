@@ -42,7 +42,7 @@ export class OrdersService {
     return true;
   }
 
-  private async isExists(id: UUID): Promise<boolean> {
-    return (await this.findAll()).some((order) => order.id === id);
+  isExists(id: UUID): Promise<boolean> {
+    return this.orderRepo.isExists({ id });
   }
 }

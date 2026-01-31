@@ -13,14 +13,10 @@ export class OrderValidator extends Validator<CreateOrderDto> {
   }
   transform(value: CreateOrderDto, metadata: ArgumentMetadata): CreateOrderDto {
     if (!value)
-      throw new BadRequestException(
-        `No body found, expected body of type: ${this.getObjectStructure({
-          username: '',
-          foodItemId: '1-1-1-1-1',
-          quantity: 0,
-          time: new Date(),
-        })}`,
-      );
+      throw new BadRequestException({
+        error: 'No body found',
+        expected: this.refStructure,
+      });
     value.time = new Date(value.time ?? Date.now());
     return super.transform(value, metadata);
   }
