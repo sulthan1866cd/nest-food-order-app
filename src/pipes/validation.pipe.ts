@@ -49,6 +49,14 @@ export class Validator<T> implements PipeTransform<Partial<T>, T> {
     }
   }
 
+  protected validateAndSetPositiveNumber(value: Partial<T>, key: keyof T) {
+    const keyStr = key as string;
+    value[keyStr] = Number(value[keyStr]);
+    if (!isFinite(value[keyStr] as number) || value[keyStr] <= 0) {
+      throw new BadRequestException(`${keyStr} must be a positive number`);
+    }
+  }
+
   transform(value: Partial<T>, metadata: ArgumentMetadata): T {
     if (metadata.type !== 'body') return value as T;
     if (!value)

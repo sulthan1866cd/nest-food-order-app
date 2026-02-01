@@ -6,7 +6,7 @@ import { OrdersService } from '../orders/orders.service';
 import { CreateFoodItemDto, UpdateFoodItemDto } from './dto/food-item.dto';
 import { IS3ClientService } from 'src/interface/s3ClientService.interface';
 import { randomUUID } from 'crypto';
-import { Order } from '../orders/entities/order.entity';
+import { Order, OrderStatus } from '../orders/entities/order.entity';
 import {
   mockFoodItems,
   getMockFoodItem,
@@ -156,6 +156,7 @@ describe('FoodItemsService', () => {
           username,
           foodItemId: mockFoodItems[0].id,
           foodItem: mockFoodItems[0],
+          status: OrderStatus.PENDING,
         },
         {
           id: randomUUID(),
@@ -164,6 +165,7 @@ describe('FoodItemsService', () => {
           username,
           foodItemId: mockFoodItems[1].id,
           foodItem: mockFoodItems[1],
+          status: OrderStatus.COMPLETED,
         },
       ];
       const findByUsernameFn = jest

@@ -1,8 +1,10 @@
 import { ArgumentMetadata, BadRequestException } from '@nestjs/common';
-import { CreateOrderDto } from '../dto/orders.dto';
+import { CreateOrderDto, UpdateOrderStatusDto } from '../dto/orders.dto';
 import { Validator } from 'src/pipes/validation.pipe';
+import { UpdateValidator } from 'src/pipes/updateValitation.pipe';
+import { OrderStatus } from '../entities/order.entity';
 
-export class OrderValidator extends Validator<CreateOrderDto> {
+export class CreateOrderValidator extends Validator<CreateOrderDto> {
   constructor() {
     super({
       username: '',
@@ -18,6 +20,13 @@ export class OrderValidator extends Validator<CreateOrderDto> {
         expected: this.refStructure,
       });
     value.time = new Date(value.time ?? Date.now());
+    this.validateAndSetPositiveNumber(value, 'quantity');
     return super.transform(value, metadata);
+  }
+}
+
+export class UpdateOrderValidator extends UpdateValidator<UpdateOrderStatusDto> {
+  constructor() {
+    super({ status: OrderStatus.PENDING });
   }
 }

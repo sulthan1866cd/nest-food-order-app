@@ -16,7 +16,7 @@ export class CreateFoodItemValidator extends Validator<CreateFoodItemDto> {
         error: 'No body found',
         expected: this.refStructure,
       });
-    value.price = Number(value.price);
+    this.validateAndSetPositiveNumber(value, 'price');
     return super.transform(value, metadata);
   }
 }
@@ -34,7 +34,7 @@ export class UpdateFoodItemValidator extends UpdateValidator<UpdateFoodItemDto> 
         error: 'No body found',
         expected: this.refStructure,
       });
-    value.price = Number(value.price);
+    this.validateAndSetPositiveNumber(value, 'price');
     return super.transform(value, metadata);
   }
 }

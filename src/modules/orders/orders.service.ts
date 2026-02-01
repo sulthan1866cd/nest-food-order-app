@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Order } from './entities/order.entity';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Order, OrderStatus } from './entities/order.entity';
 import { type IRepository } from 'src/interface/repository.interface';
 import { UsersService } from '../users/users.service';
 import { CreateOrderDto } from './dto/orders.dto';
@@ -34,6 +34,18 @@ export class OrdersService {
 
   findByUsername(username: string): Promise<Order[]> {
     return this.orderRepo.findBy({ username });
+  }
+
+  async updateStatus(id: UUID, status: OrderStatus): Promise<Order | null> {
+    const order = await this.orderRepo.findOneBy({ id });
+    if (!order) return null;
+    if (order.status !== OrderStatus.PENDING) {
+      throw new BadRequestException(
+        'Cannot revert completed or cancelled order',
+      );
+    }
+
+    return this.orderRepo.update({ status, id });
   }
 
   async remove(id: UUID): Promise<boolean> {

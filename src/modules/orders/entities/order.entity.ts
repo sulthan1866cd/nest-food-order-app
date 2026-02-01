@@ -9,4 +9,11 @@ export class Order {
   foodItem: FoodItem;
   foodItemId: UUID;
   quantity: number;
+  status: OrderStatus;
+}
+
+export enum OrderStatus {
+  PENDING = 'pending',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
 }

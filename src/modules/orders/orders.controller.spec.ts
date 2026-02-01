@@ -5,6 +5,7 @@ import { getMockOrder, mockOrders } from 'src/mocks/mockDatas/orders.stub';
 import { CreateOrderDto } from './dto/orders.dto';
 import { NotFoundException } from '@nestjs/common';
 import { getMockUser } from 'src/mocks/mockDatas/users.stub';
+import { OrderStatus } from './entities/order.entity';
 
 describe('OrdersController', () => {
   let ordersController: OrdersController;
@@ -21,6 +22,7 @@ describe('OrdersController', () => {
             create: jest.fn(),
             findAll: jest.fn(),
             findByUsername: jest.fn(),
+            updateStatus: jest.fn(),
             remove: jest.fn(),
           },
         },
@@ -96,6 +98,42 @@ describe('OrdersController', () => {
       const actual = await ordersController.findByUsername(username);
       expect(actual).toEqual(mockOrders);
       expect(findByUsernameFn).toHaveBeenCalledWith(username);
+    });
+  });
+
+  describe('updateStatus()', () => {
+    it('should update order status and return updated order', async () => {
+      const order = getMockOrder();
+      const updateStatusDto = { status: OrderStatus.COMPLETED };
+      const updateStatusFn = jest
+        .spyOn(ordersService, 'updateStatus')
+        .mockResolvedValue(order);
+
+      const actual = await ordersController.updateStatus(
+        order.id,
+        updateStatusDto,
+      );
+      expect(actual).toEqual(order);
+      expect(updateStatusFn).toHaveBeenCalledWith(
+        order.id,
+        updateStatusDto.status,
+      );
+    });
+
+    it('should throw exception if order dosent exist', async () => {
+      const order = getMockOrder();
+      const updateStatusDto = { status: OrderStatus.COMPLETED };
+      const updateStatusFn = jest
+        .spyOn(ordersService, 'updateStatus')
+        .mockResolvedValue(null);
+
+      await expect(
+        ordersController.updateStatus(order.id, updateStatusDto),
+      ).rejects.toThrow(NotFoundException);
+      expect(updateStatusFn).toHaveBeenCalledWith(
+        order.id,
+        updateStatusDto.status,
+      );
     });
   });
 

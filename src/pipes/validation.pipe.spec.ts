@@ -72,6 +72,28 @@ describe('Validator', () => {
     });
   });
 
+  describe('validateAndSetPositiveNumber()', () => {
+    it('should convert string to positive number', () => {
+      const value: Partial<TestDto> = { age: '25' as unknown as number };
+      validator['validateAndSetPositiveNumber'](value, 'age');
+      expect(value.age).toBe(25);
+    });
+
+    it('should throw error for non-positive numbers', () => {
+      const value: Partial<TestDto> = { age: '-5' as unknown as number };
+      expect(() =>
+        validator['validateAndSetPositiveNumber'](value, 'age'),
+      ).toThrow(BadRequestException);
+    });
+
+    it('should throw error for non-numeric values', () => {
+      const value: Partial<TestDto> = { age: 'abc' as unknown as number };
+      expect(() =>
+        validator['validateAndSetPositiveNumber'](value, 'age'),
+      ).toThrow(BadRequestException);
+    });
+  });
+
   describe('transform()', () => {
     it('should return value unchanged when metadata type is not body', () => {
       const value = { username: 'test', age: 25, email: 'test@test.com' };
