@@ -46,7 +46,6 @@ describe('OrdersController', () => {
         foodItemId: order.foodItemId,
         username: order.username,
         quantity: 3,
-        time: new Date(),
       };
       const createFn = jest
         .spyOn(ordersService, 'create')
@@ -63,7 +62,6 @@ describe('OrdersController', () => {
         foodItemId: order.foodItemId,
         username: order.username,
         quantity: 3,
-        time: new Date(),
       };
       const createFn = jest
         .spyOn(ordersService, 'create')

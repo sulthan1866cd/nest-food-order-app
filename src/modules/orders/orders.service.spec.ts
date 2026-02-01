@@ -51,7 +51,6 @@ describe('OrdersService', () => {
         foodItemId: order.foodItemId,
         username: order.username,
         quantity: 3,
-        time: new Date(),
       };
       jest.spyOn(usersService, 'isExists').mockResolvedValue(true);
       jest.spyOn(orderRepo, 'findOneBy').mockResolvedValue(null);
@@ -69,7 +68,6 @@ describe('OrdersService', () => {
         foodItemId: order.foodItemId,
         username: order.username,
         quantity: 3,
-        time: new Date(),
       };
       jest.spyOn(usersService, 'isExists').mockResolvedValue(true);
       jest.spyOn(orderRepo, 'findOneBy').mockResolvedValue(order);
@@ -87,7 +85,6 @@ describe('OrdersService', () => {
         foodItemId: order.foodItemId,
         username: order.username,
         quantity: 3,
-        time: new Date(),
       };
       jest.spyOn(usersService, 'isExists');
       jest.spyOn(orderRepo, 'findOneBy');

@@ -19,7 +19,7 @@ export class OrdersService {
       username: order.username,
       foodItemId: order.foodItemId,
     });
-    if (previousOrder)
+    if (previousOrder && previousOrder.status === OrderStatus.PENDING)
       return this.orderRepo.update({
         ...previousOrder,
         quantity: previousOrder.quantity + order.quantity,

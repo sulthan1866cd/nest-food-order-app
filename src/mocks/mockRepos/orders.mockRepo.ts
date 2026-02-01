@@ -4,6 +4,7 @@ import { type IRepository } from 'src/interface/repository.interface';
 import { FoodItem } from 'src/modules/food-items/entities/food-item.entity';
 import { Inject } from '@nestjs/common';
 import { mockOrders } from '../mockDatas/orders.stub';
+import { UUID } from 'crypto';
 
 export class OrderMockRepository extends BaseMockRepository<Order> {
   constructor(
@@ -17,6 +18,9 @@ export class OrderMockRepository extends BaseMockRepository<Order> {
       id: entity.foodItemId,
     })) as FoodItem;
     entity.status = OrderStatus.PENDING;
-    return super.create(entity);
+    return super.create({ ...entity, time: new Date() });
+  }
+  async update(entity: Partial<Order> & { id: UUID }): Promise<Order | null> {
+    return super.update({ ...entity, time: new Date() });
   }
 }

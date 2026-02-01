@@ -10,7 +10,6 @@ export class CreateOrderValidator extends Validator<CreateOrderDto> {
       username: '',
       foodItemId: '1-1-1-1-1',
       quantity: 0,
-      time: new Date(),
     });
   }
   transform(value: CreateOrderDto, metadata: ArgumentMetadata): CreateOrderDto {
@@ -19,7 +18,6 @@ export class CreateOrderValidator extends Validator<CreateOrderDto> {
         error: 'No body found',
         expected: this.refStructure,
       });
-    value.time = new Date(value.time ?? Date.now());
     this.validateAndSetPositiveNumber(value, 'quantity');
     return super.transform(value, metadata);
   }
