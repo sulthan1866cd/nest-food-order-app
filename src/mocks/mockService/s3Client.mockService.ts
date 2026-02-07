@@ -4,7 +4,7 @@ import {
   DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
-import { IS3ClientService } from 'src/interface/s3ClientService.interface';
+import { IS3ClientService } from 'src/modules/aws/interfaces/s3ClientService.interface';
 import { getMockFoodItem } from '../mockDatas/foodItems.stub';
 
 @Injectable()

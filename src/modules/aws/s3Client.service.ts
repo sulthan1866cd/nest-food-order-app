@@ -11,7 +11,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IS3ClientService } from 'src/interface/s3ClientService.interface';
+import { IS3ClientService } from 'src/modules/aws/interfaces/s3ClientService.interface';
 
 @Injectable()
 export class S3ClientService implements IS3ClientService {

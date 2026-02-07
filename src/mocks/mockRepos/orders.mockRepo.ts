@@ -1,4 +1,4 @@
-import { Order, OrderStatus } from 'src/modules/orders/entities/order.entity';
+import { Order } from 'src/modules/orders/entities/order.entity';
 import { BaseMockRepository } from './baseMockRepo';
 import { type IRepository } from 'src/interface/repository.interface';
 import { FoodItem } from 'src/modules/food-items/entities/food-item.entity';
@@ -17,7 +17,6 @@ export class OrderMockRepository extends BaseMockRepository<Order> {
     entity.foodItem = (await this.foodItemRepository.findOneBy({
       id: entity.foodItemId,
     })) as FoodItem;
-    entity.status = OrderStatus.PENDING;
     return super.create({ ...entity, time: new Date() });
   }
   async update(entity: Partial<Order> & { id: UUID }): Promise<Order | null> {

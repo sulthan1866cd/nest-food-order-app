@@ -1,5 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
-import { IAuthService } from 'src/interface/authService.interface';
+import { IAuthService } from 'src/modules/auth/interfaces/authService.interface';
 import { UsersService } from '../users/users.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';

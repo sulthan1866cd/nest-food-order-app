@@ -5,7 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-import { ClientUserDto } from '../dto/users.dto.';
+import { ClientUserDto } from '../dto/users.dto';
 import { User } from '../entities/user.entity';
 
 @Injectable()

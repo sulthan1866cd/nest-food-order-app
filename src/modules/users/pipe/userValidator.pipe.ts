@@ -1,6 +1,6 @@
-import { Role } from 'src/gurds/role.enum';
+import { Role } from 'src/guards/role.enum';
 import { Validator } from 'src/pipes/validation.pipe';
-import { CreateUserDto, UpdateUserDto } from '../dto/users.dto.';
+import { CreateUserDto, UpdateUserDto } from '../dto/users.dto';
 import { UpdateValidator } from 'src/pipes/updateValitation.pipe';
 
 export class CreateUserValidator extends Validator<CreateUserDto> {

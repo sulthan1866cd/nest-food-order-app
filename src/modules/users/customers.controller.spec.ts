@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomersController } from './customers.controller';
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto } from './dto/users.dto.';
+import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { getMockUser } from 'src/mocks/mockDatas/users.stub';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { IAuthService } from 'src/interface/authService.interface';
+import { IAuthService } from 'src/modules/auth/interfaces/authService.interface';
 import { getMockUser } from 'src/mocks/mockDatas/users.stub';
 
 describe('AuthController', () => {

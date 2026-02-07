@@ -7,9 +7,9 @@ import {
   getOriginalPassword,
   mockUsers,
 } from 'src/mocks/mockDatas/users.stub';
-import { CreateUserDto, UpdateUserDto } from './dto/users.dto.';
-import { IAuthService } from 'src/interface/authService.interface';
-import { Role } from 'src/gurds/role.enum';
+import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
+import { IAuthService } from 'src/modules/auth/interfaces/authService.interface';
+import { Role } from 'src/guards/role.enum';
 import { ConflictException } from '@nestjs/common';
 import { HashService } from '../auth/hash.service';
 
@@ -130,7 +130,7 @@ describe('UsersService', () => {
   });
 
   describe('findOne()', () => {
-    it('should return all users', async () => {
+    it('should return one user with username', async () => {
       const user = getMockUser();
       const findOneByFn = jest
         .spyOn(userRepo, 'findOneBy')
@@ -143,7 +143,7 @@ describe('UsersService', () => {
   });
 
   describe('findOneByEmail()', () => {
-    it('should return all users', async () => {
+    it('should return one user with email', async () => {
       const user = getMockUser();
       const findOneByFn = jest
         .spyOn(userRepo, 'findOneBy')
@@ -175,7 +175,7 @@ describe('UsersService', () => {
   });
 
   describe('findOneCustomer()', () => {
-    it('should return all users', async () => {
+    it('should return one user with username and customer role', async () => {
       const user = getMockUser();
       const findOneByFn = jest
         .spyOn(userRepo, 'findOneBy')

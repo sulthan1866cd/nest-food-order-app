@@ -1,5 +1,5 @@
 import { UUID } from 'crypto';
-import { Role } from 'src/gurds/role.enum';
+import { Role } from 'src/guards/role.enum';
 
 export class User {
   id: UUID;

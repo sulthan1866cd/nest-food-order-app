@@ -13,21 +13,21 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthGaurd } from '../../gurds/auth.guard';
-import { Roles } from 'src/gurds/roles.decorator';
-import { Role } from 'src/gurds/role.enum';
-import { RolesGuard } from 'src/gurds/roles.guard';
+import { AuthGuard } from '../../guards/auth.guard';
+import { Roles } from 'src/guards/roles.decorator';
+import { Role } from 'src/guards/role.enum';
+import { RolesGuard } from 'src/guards/roles.guard';
 import {
   CreateUserValidator,
   UpdateUserValidator,
 } from './pipe/userValidator.pipe';
-import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto.';
+import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { UserInterceptor } from './interceptor/user.interceptor';
 import { User } from './entities/user.entity';
 import { UsersInterceptor } from './interceptor/users.interceptor';
 
 @Controller('admin/users')
-@UseGuards(AuthGaurd, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class AdminsController {
   constructor(private readonly usersService: UsersService) {}
 

@@ -2,7 +2,7 @@ import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { FoodItem } from './entities/food-item.entity';
 import { type IRepository } from 'src/interface/repository.interface';
 import { OrdersService } from '../orders/orders.service';
-import { type IS3ClientService } from 'src/interface/s3ClientService.interface';
+import { type IS3ClientService } from 'src/modules/aws/interfaces/s3ClientService.interface';
 import { CreateFoodItemDto, UpdateFoodItemDto } from './dto/food-item.dto';
 import { UUID } from 'crypto';
 

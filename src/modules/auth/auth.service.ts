@@ -1,4 +1,4 @@
-import { IAuthService } from 'src/interface/authService.interface';
+import { IAuthService } from 'src/modules/auth/interfaces/authService.interface';
 import { User } from '../users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';

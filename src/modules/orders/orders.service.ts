@@ -25,7 +25,7 @@ export class OrdersService {
         quantity: previousOrder.quantity + order.quantity,
       });
 
-    return this.orderRepo.create(order);
+    return this.orderRepo.create({ ...order, status: OrderStatus.PENDING });
   }
 
   findAll(): Promise<Order[]> {

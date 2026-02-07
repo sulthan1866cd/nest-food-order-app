@@ -16,10 +16,10 @@ import {
 } from '@nestjs/common';
 import { FoodItemsService } from './food-items.service';
 import { FoodItem } from './entities/food-item.entity';
-import { Roles } from 'src/gurds/roles.decorator';
-import { Role } from 'src/gurds/role.enum';
-import { AuthGaurd } from 'src/gurds/auth.guard';
-import { RolesGuard } from 'src/gurds/roles.guard';
+import { Roles } from 'src/guards/roles.decorator';
+import { Role } from 'src/guards/role.enum';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
 import {
   CreateFoodItemValidator,
   UpdateFoodItemValidator,
@@ -34,7 +34,7 @@ export class FoodItemsController {
 
   @Post()
   @Roles(Role.CHEF)
-  @UseGuards(AuthGaurd, RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('image'))
   async create(
     @Body(CreateFoodItemValidator) foodItem: CreateFoodItemDto,
@@ -81,7 +81,7 @@ export class FoodItemsController {
 
   @Put(':id')
   @Roles(Role.CHEF)
-  @UseGuards(AuthGaurd, RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('image'))
   async update(
     @Param('id', ParseUUIDPipe) id: UUID,
@@ -101,7 +101,7 @@ export class FoodItemsController {
 
   @Delete(':id')
   @Roles(Role.CHEF)
-  @UseGuards(AuthGaurd, RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   async remove(@Param('id', ParseUUIDPipe) id: UUID): Promise<void> {
     const isDeleted = await this.foodItemsService.remove(id);
     if (!isDeleted)

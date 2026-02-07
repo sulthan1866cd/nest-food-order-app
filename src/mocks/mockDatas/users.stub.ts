@@ -1,5 +1,5 @@
 import { randomInt, randomUUID } from 'crypto';
-import { Role } from 'src/gurds/role.enum';
+import { Role } from 'src/guards/role.enum';
 import { User } from 'src/modules/users/entities/user.entity';
 
 export const mockUsers: User[] = [

@@ -7,9 +7,9 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
-import { type IAuthService } from 'src/interface/authService.interface';
+import { type IAuthService } from 'src/modules/auth/interfaces/authService.interface';
 import { User } from '../users/entities/user.entity';
-import { ClientUserDto } from '../users/dto/users.dto.';
+import { ClientUserDto } from '../users/dto/users.dto';
 import { UserInterceptor } from '../users/interceptor/user.interceptor';
 
 @Controller('auth')

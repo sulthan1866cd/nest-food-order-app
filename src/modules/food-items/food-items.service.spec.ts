@@ -4,7 +4,7 @@ import { IRepository } from 'src/interface/repository.interface';
 import { FoodItem } from './entities/food-item.entity';
 import { OrdersService } from '../orders/orders.service';
 import { CreateFoodItemDto, UpdateFoodItemDto } from './dto/food-item.dto';
-import { IS3ClientService } from 'src/interface/s3ClientService.interface';
+import { IS3ClientService } from 'src/modules/aws/interfaces/s3ClientService.interface';
 import { randomUUID } from 'crypto';
 import { Order, OrderStatus } from '../orders/entities/order.entity';
 import {

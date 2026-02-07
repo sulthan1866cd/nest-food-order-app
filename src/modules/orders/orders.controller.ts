@@ -17,15 +17,15 @@ import {
   CreateOrderValidator,
   UpdateOrderValidator,
 } from './pipe/orderValidator.pipe';
-import { AuthGaurd } from 'src/gurds/auth.guard';
-import { Roles } from 'src/gurds/roles.decorator';
-import { Role } from 'src/gurds/role.enum';
-import { RolesGuard } from 'src/gurds/roles.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { Roles } from 'src/guards/roles.decorator';
+import { Role } from 'src/guards/role.enum';
+import { RolesGuard } from 'src/guards/roles.guard';
 import { CreateOrderDto, UpdateOrderStatusDto } from './dto/orders.dto';
 import { type UUID } from 'crypto';
 
 @Controller('orders')
-@UseGuards(AuthGaurd)
+@UseGuards(AuthGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 

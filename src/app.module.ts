@@ -5,7 +5,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { FoodItemsModule } from './modules/food-items/food-items.module';
 import { ConfigModule } from '@nestjs/config';
 import { AWSModule } from './modules/aws/aws.module';
-import { type IS3ClientService } from './interface/s3ClientService.interface';
+import { type IS3ClientService } from './modules/aws/interfaces/s3ClientService.interface';
 
 @Module({
   imports: [

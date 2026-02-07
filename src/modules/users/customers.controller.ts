@@ -13,12 +13,12 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthGaurd } from '../../gurds/auth.guard';
+import { AuthGuard } from '../../guards/auth.guard';
 import {
   CreateUserValidator,
   UpdateUserValidator,
 } from './pipe/userValidator.pipe';
-import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto.';
+import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { UserInterceptor } from './interceptor/user.interceptor';
 import { User } from './entities/user.entity';
 
@@ -38,7 +38,7 @@ export class CustomersController {
   }
 
   @Get(':username')
-  @UseGuards(AuthGaurd)
+  @UseGuards(AuthGuard)
   async findOne(@Param('username') username: string): Promise<User> {
     const user = await this.usersService.findOneCustomer(username);
     if (!user) throw new NotFoundException(`user: ${username} does not exist`);
@@ -48,7 +48,7 @@ export class CustomersController {
 
   @Put(':username')
   @UsePipes(UpdateUserValidator)
-  @UseGuards(AuthGaurd)
+  @UseGuards(AuthGuard)
   async update(
     @Param('username') username: string,
     @Body() user: UpdateUserDto,
@@ -61,7 +61,7 @@ export class CustomersController {
   }
 
   @Delete(':username')
-  @UseGuards(AuthGaurd)
+  @UseGuards(AuthGuard)
   async remove(@Param('username') username: string) {
     const isDeleted = await this.usersService.removeCustomer(username);
     if (!isDeleted)

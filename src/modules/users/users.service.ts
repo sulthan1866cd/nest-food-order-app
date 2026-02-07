@@ -6,9 +6,9 @@ import {
 } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { type IRepository } from 'src/interface/repository.interface';
-import { type IAuthService } from 'src/interface/authService.interface';
-import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto.';
-import { Role } from 'src/gurds/role.enum';
+import { type IAuthService } from 'src/modules/auth/interfaces/authService.interface';
+import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto';
+import { Role } from 'src/guards/role.enum';
 import { HashService } from '../auth/hash.service';
 
 @Injectable()

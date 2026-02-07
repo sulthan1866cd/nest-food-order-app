@@ -8,7 +8,7 @@ export class UpdateValidator<T> extends Validator<Partial<T>> {
 
   validateObject(value: Partial<T>, ref: Partial<T>, path = 'body') {
     for (const key in value) {
-      if (typeof value[key] !== typeof ref[key])
+      if (ref[key] && typeof value[key] !== typeof ref[key])
         throw new BadRequestException({
           error: 'Incorrect request object type',
           expected: this.refStructure,
