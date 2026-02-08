@@ -1,4 +1,9 @@
-import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Product } from './entities/product.entity';
 import { type IRepository } from 'src/interface/repository.interface';
 import { OrdersService } from '../orders/orders.service';
@@ -29,7 +34,7 @@ export class ProductsService {
     imageFile: Express.Multer.File,
   ): Promise<Product | null> {
     if (await this.isExists(product.name)) return null;
-    if(!(await this.shopService.isExists({ id: product.shopId }))) 
+    if (!(await this.shopService.isExists({ id: product.shopId })))
       throw new NotFoundException(`Shop: ${product.shopId} does not exist`);
     const createdProduct = (await this.productRepo.create(product)) as Product;
     const url = await this.s3ClientService.upload(
