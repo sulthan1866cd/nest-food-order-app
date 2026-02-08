@@ -25,6 +25,8 @@ export class UsersInterceptor implements NestInterceptor<
           fullName: user.fullName,
           id: user.id,
           role: user.role,
+          shopId: 'shopId' in user ? user.shopId : undefined,
+          mallId: 'mallId' in user ? user.mallId : undefined,
         })),
       ),
     );

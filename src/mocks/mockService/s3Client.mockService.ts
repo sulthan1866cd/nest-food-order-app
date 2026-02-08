@@ -5,7 +5,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { IS3ClientService } from 'src/modules/aws/interfaces/s3ClientService.interface';
-import { getMockFoodItem } from '../mockDatas/foodItems.stub';
+import { getMockProduct } from '../mockDatas/products.stub';
 
 @Injectable()
 export class S3ClientMockService implements IS3ClientService {
@@ -14,7 +14,7 @@ export class S3ClientMockService implements IS3ClientService {
     return Promise.resolve(res);
   }
   upload(Key: string, file: Buffer, Bucket?: string): Promise<string> {
-    return Promise.resolve(getMockFoodItem().image);
+    return Promise.resolve(getMockProduct().image);
   }
   delete(Key: string, Bucket?: string): Promise<DeleteObjectCommandOutput> {
     const res: DeleteObjectCommandOutput = { $metadata: {} };

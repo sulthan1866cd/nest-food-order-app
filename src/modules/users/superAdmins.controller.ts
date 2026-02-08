@@ -11,7 +11,6 @@ import {
   ConflictException,
   NotFoundException,
   UseInterceptors,
-  ParseUUIDPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -26,67 +25,47 @@ import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { UserInterceptor } from './interceptor/user.interceptor';
 import { User } from './entities/user.entity';
 import { UsersInterceptor } from './interceptor/users.interceptor';
-import { type UUID } from 'crypto';
-import { MallIdIntegrityGuard } from 'src/guards/mallIdIntegrity.guard';
 
-@Controller('admin/users')
+@Controller('super-admin/users')
 @UseGuards(AuthGuard, RolesGuard)
-export class AdminsController {
+@Roles(Role.SUPER_ADMIN)
+export class SuperAdminsController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @Roles(Role.ADMIN)
   @UsePipes(CreateUserValidator)
   @UseInterceptors(UserInterceptor)
-  @UseGuards(MallIdIntegrityGuard)
   async create(@Body() user: CreateUserDto): Promise<ClientUserDto> {
-    if (!user.mallId) throw new ConflictException('mallId is required');
-    const addedUser = await this.usersService.createUserInMall(
-      user,
-      user.mallId,
-      user.shopId,
-    );
+    const addedUser = await this.usersService.create(user);
     if (!addedUser)
       throw new ConflictException(`user: ${user.username} already exists`);
 
     return addedUser;
   }
 
-  @Get(':mallId')
+  @Get()
   @UseInterceptors(UsersInterceptor)
-  @Roles(Role.ADMIN)
-  findAll(@Param('mallId', ParseUUIDPipe) mallId: UUID): Promise<User[]> {
-    return this.usersService.findAllInMall(mallId);
+  findAll(): Promise<User[]> {
+    return this.usersService.findAll();
   }
 
-  @Get(':mallId/:username')
-  @Roles(Role.WORKER, Role.ADMIN)
+  @Get(':username')
   @UseInterceptors(UserInterceptor)
-  async findOne(
-    @Param('username') username: string,
-    @Param('mallId', ParseUUIDPipe) mallId: UUID,
-  ): Promise<User> {
-    const user = await this.usersService.findOneInMall(username, mallId);
+  async findOne(@Param('username') username: string): Promise<User> {
+    const user = await this.usersService.findOne(username);
     if (!user) throw new NotFoundException(`user: ${username} does not exist`);
 
     return user;
   }
 
   @Put(':username')
-  @Roles(Role.WORKER, Role.ADMIN)
   @UsePipes(UpdateUserValidator)
   @UseInterceptors(UserInterceptor)
-  @UseGuards(MallIdIntegrityGuard)
   async update(
     @Param('username') username: string,
     @Body() user: UpdateUserDto,
-    @Param('mallId', ParseUUIDPipe) mallId: UUID,
   ): Promise<User> {
-    const updatedUser = await this.usersService.updateInMall(
-      username,
-      user,
-      mallId,
-    );
+    const updatedUser = await this.usersService.update(username, user);
     if (!updatedUser)
       throw new NotFoundException(`user: ${username} does not exist`);
 
@@ -94,12 +73,8 @@ export class AdminsController {
   }
 
   @Delete(':username')
-  @Roles(Role.ADMIN)
-  async remove(
-    @Param('username') username: string,
-    @Param('mallId', ParseUUIDPipe) mallId: UUID,
-  ): Promise<void> {
-    const isDeleted = await this.usersService.removeInMall(username, mallId);
+  async remove(@Param('username') username: string): Promise<void> {
+    const isDeleted = await this.usersService.remove(username);
     if (!isDeleted)
       throw new NotFoundException(`user: ${username} does not exist`);
   }

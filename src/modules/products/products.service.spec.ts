@@ -1,36 +1,36 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FoodItemsService } from './food-items.service';
+import { ProductsService } from './products.service';
 import { IRepository } from 'src/interface/repository.interface';
-import { FoodItem } from './entities/food-item.entity';
+import { Product } from './entities/product.entity';
 import { OrdersService } from '../orders/orders.service';
-import { CreateFoodItemDto, UpdateFoodItemDto } from './dto/food-item.dto';
+import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { IS3ClientService } from 'src/modules/aws/interfaces/s3ClientService.interface';
 import { randomUUID } from 'crypto';
 import { Order, OrderStatus } from '../orders/entities/order.entity';
 import {
-  mockFoodItems,
-  getMockFoodItem,
+  mockProducts,
+  getMockProduct,
   getMockImageFile,
-} from 'src/mocks/mockDatas/foodItems.stub';
+} from 'src/mocks/mockDatas/products.stub';
 import { getMockUser } from 'src/mocks/mockDatas/users.stub';
 import { ConflictException } from '@nestjs/common';
 
-describe('FoodItemsService', () => {
-  let foodItemsService: FoodItemsService;
+describe('ProductsService', () => {
+  let productsService: ProductsService;
   let ordersService: OrdersService;
-  let foodItemRepo: IRepository<FoodItem>;
+  let productRepo: IRepository<Product>;
   let s3ClientService: IS3ClientService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        FoodItemsService,
+        ProductsService,
         {
           provide: OrdersService,
           useValue: { findByUsername: jest.fn() },
         },
         {
-          provide: 'FoodItemRepository',
+          provide: 'ProductRepository',
           useValue: {
             create: jest.fn(),
             update: jest.fn(),
@@ -47,56 +47,56 @@ describe('FoodItemsService', () => {
       ],
     }).compile();
 
-    foodItemsService = module.get<FoodItemsService>(FoodItemsService);
+    productsService = module.get<ProductsService>(ProductsService);
     ordersService = module.get<OrdersService>(OrdersService);
-    foodItemRepo = module.get<IRepository<FoodItem>>('FoodItemRepository');
+    productRepo = module.get<IRepository<Product>>('ProductRepository');
     s3ClientService = module.get<IS3ClientService>('S3ClientService');
     ordersService = module.get<OrdersService>(OrdersService);
   });
 
   it('should be defined', () => {
-    expect(foodItemsService).toBeDefined();
+    expect(productsService).toBeDefined();
     expect(ordersService).toBeDefined();
-    expect(foodItemRepo).toBeDefined();
+    expect(productRepo).toBeDefined();
     expect(s3ClientService).toBeDefined();
   });
 
   describe('create()', () => {
-    it('gets foodItem dto to create and return saved foodItem', async () => {
-      const imageLink = getMockFoodItem().image;
-      const createFoodItem: CreateFoodItemDto = {
+    it('gets product dto to create and return saved product', async () => {
+      const imageLink = getMockProduct().image;
+      const createProduct: CreateProductDto = {
         name: 'new food',
         price: 99,
       };
       const image = getMockImageFile();
-      const expecedFoodItem: FoodItem = {
+      const expecedProduct: Product = {
         id: randomUUID(),
         image: imageLink,
-        name: createFoodItem.name,
-        price: createFoodItem.price,
+        name: createProduct.name,
+        price: createProduct.price,
       };
-      jest.spyOn(foodItemRepo, 'isExists').mockResolvedValue(false);
+      jest.spyOn(productRepo, 'isExists').mockResolvedValue(false);
       const createFn = jest
-        .spyOn(foodItemRepo, 'create')
-        .mockResolvedValue(expecedFoodItem);
+        .spyOn(productRepo, 'create')
+        .mockResolvedValue(expecedProduct);
       jest.spyOn(s3ClientService, 'upload').mockResolvedValue(imageLink);
-      jest.spyOn(foodItemRepo, 'update').mockResolvedValue(expecedFoodItem);
+      jest.spyOn(productRepo, 'update').mockResolvedValue(expecedProduct);
 
-      const actual = await foodItemsService.create(createFoodItem, image);
-      expect(actual).toEqual(expecedFoodItem);
-      expect(createFn).toHaveBeenCalledWith(createFoodItem);
+      const actual = await productsService.create(createProduct, image);
+      expect(actual).toEqual(expecedProduct);
+      expect(createFn).toHaveBeenCalledWith(createProduct);
     });
 
-    it('retuns null if foodItem already exists', async () => {
-      const createFoodItem: CreateFoodItemDto = {
+    it('retuns null if product already exists', async () => {
+      const createProduct: CreateProductDto = {
         name: 'new food',
         price: 99,
       };
       const image = getMockImageFile();
-      jest.spyOn(foodItemRepo, 'isExists').mockResolvedValue(true);
-      const createFn = jest.spyOn(foodItemRepo, 'create');
+      jest.spyOn(productRepo, 'isExists').mockResolvedValue(true);
+      const createFn = jest.spyOn(productRepo, 'create');
 
-      const actual = await foodItemsService.create(createFoodItem, image);
+      const actual = await productsService.create(createProduct, image);
       expect(actual).toBeNull();
       expect(createFn).not.toHaveBeenCalled();
     });
@@ -105,11 +105,11 @@ describe('FoodItemsService', () => {
   describe('findAllBy()', () => {
     it('should get All Food Items if no query passed', async () => {
       const findByFn = jest
-        .spyOn(foodItemRepo, 'findBy')
-        .mockResolvedValue(mockFoodItems);
+        .spyOn(productRepo, 'findBy')
+        .mockResolvedValue(mockProducts);
 
-      const actual = await foodItemsService.findAllBy({});
-      expect(actual).toEqual(mockFoodItems);
+      const actual = await productsService.findAllBy({});
+      expect(actual).toEqual(mockProducts);
       expect(findByFn).toHaveBeenCalled();
     });
 
@@ -118,9 +118,9 @@ describe('FoodItemsService', () => {
       const min = '20';
       const max = '50';
       const findByFn = jest
-        .spyOn(foodItemRepo, 'findBy')
-        .mockResolvedValue(mockFoodItems);
-      const expectedFoodItems: Omit<FoodItem, 'id'>[] = [
+        .spyOn(productRepo, 'findBy')
+        .mockResolvedValue(mockProducts);
+      const expectedProducts: Omit<Product, 'id'>[] = [
         {
           image:
             'https://www.indianhealthyrecipes.com/wp-content/uploads/2022/04/idli-recipe.jpg',
@@ -135,12 +135,12 @@ describe('FoodItemsService', () => {
         },
       ];
 
-      const actual: FoodItem[] = await foodItemsService.findAllBy({
+      const actual: Product[] = await productsService.findAllBy({
         searchQuery,
         max,
         min,
       });
-      expect(actual).toMatchObject(expectedFoodItems);
+      expect(actual).toMatchObject(expectedProducts);
       expect(findByFn).toHaveBeenCalled();
     });
   });
@@ -154,8 +154,8 @@ describe('FoodItemsService', () => {
           quantity: 2,
           time: new Date(),
           username,
-          foodItemId: mockFoodItems[0].id,
-          foodItem: mockFoodItems[0],
+          productId: mockProducts[0].id,
+          product: mockProducts[0],
           status: OrderStatus.PENDING,
         },
         {
@@ -163,132 +163,132 @@ describe('FoodItemsService', () => {
           quantity: 2,
           time: new Date(),
           username,
-          foodItemId: mockFoodItems[1].id,
-          foodItem: mockFoodItems[1],
+          productId: mockProducts[1].id,
+          product: mockProducts[1],
           status: OrderStatus.COMPLETED,
         },
       ];
       const findByUsernameFn = jest
         .spyOn(ordersService, 'findByUsername')
         .mockResolvedValue(orders);
-      const actual = await foodItemsService.findAllByOrdersUserame(username);
-      expect(actual).toEqual(mockFoodItems.slice(0, 2));
+      const actual = await productsService.findAllByOrdersUserame(username);
+      expect(actual).toEqual(mockProducts.slice(0, 2));
       expect(findByUsernameFn).toHaveBeenCalledWith(username);
     });
   });
 
   describe('findOne()', () => {
     it('should return fooditem of id', async () => {
-      const foodItem = getMockFoodItem();
+      const product = getMockProduct();
       const findOneByFn = jest
-        .spyOn(foodItemRepo, 'findOneBy')
-        .mockResolvedValue(foodItem);
+        .spyOn(productRepo, 'findOneBy')
+        .mockResolvedValue(product);
 
-      const actual = await foodItemsService.findOne(foodItem.id);
-      expect(actual).toEqual(foodItem);
+      const actual = await productsService.findOne(product.id);
+      expect(actual).toEqual(product);
       expect(findOneByFn).toHaveBeenCalled();
     });
   });
 
   describe('update()', () => {
     it('should call upload,update with provided data', async () => {
-      const foodItem = getMockFoodItem();
+      const product = getMockProduct();
       const newImageLink = 'new image link';
-      const updateFoodItem: UpdateFoodItemDto = {
+      const updateProduct: UpdateProductDto = {
         name: 'new food',
         price: 98,
       };
       const image = getMockImageFile();
-      const expected: FoodItem = {
-        id: foodItem.id,
-        image: foodItem.image,
-        name: updateFoodItem.name ?? '',
-        price: updateFoodItem.price ?? 0,
+      const expected: Product = {
+        id: product.id,
+        image: product.image,
+        name: updateProduct.name ?? '',
+        price: updateProduct.price ?? 0,
       };
-      jest.spyOn(foodItemRepo, 'isExists').mockResolvedValue(true);
-      jest.spyOn(foodItemRepo, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(productRepo, 'isExists').mockResolvedValue(true);
+      jest.spyOn(productRepo, 'findOneBy').mockResolvedValue(null);
       const uploadFn = jest
         .spyOn(s3ClientService, 'upload')
         .mockResolvedValue(newImageLink);
       const updateFn = jest
-        .spyOn(foodItemRepo, 'update')
+        .spyOn(productRepo, 'update')
         .mockResolvedValue(expected);
 
-      const actual = await foodItemsService.update(
-        foodItem.id,
-        updateFoodItem,
+      const actual = await productsService.update(
+        product.id,
+        updateProduct,
         image,
       );
       expect(actual).toEqual(expected);
-      expect(uploadFn).toHaveBeenCalledWith(foodItem.id, image.buffer);
+      expect(uploadFn).toHaveBeenCalledWith(product.id, image.buffer);
       expect(updateFn).toHaveBeenCalledWith({
-        ...updateFoodItem,
-        id: foodItem.id,
+        ...updateProduct,
+        id: product.id,
         image: newImageLink,
       });
     });
 
     it('should not update image if imageFile is not provided', async () => {
-      const foodItem = getMockFoodItem();
-      const updateFoodItem: UpdateFoodItemDto = {
+      const product = getMockProduct();
+      const updateProduct: UpdateProductDto = {
         name: 'new food',
         price: 98,
       };
-      const expected: FoodItem = {
-        id: foodItem.id,
-        image: foodItem.image,
-        name: updateFoodItem.name ?? '',
-        price: updateFoodItem.price ?? 0,
+      const expected: Product = {
+        id: product.id,
+        image: product.image,
+        name: updateProduct.name ?? '',
+        price: updateProduct.price ?? 0,
       };
-      jest.spyOn(foodItemRepo, 'isExists').mockResolvedValue(true);
-      jest.spyOn(foodItemRepo, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(productRepo, 'isExists').mockResolvedValue(true);
+      jest.spyOn(productRepo, 'findOneBy').mockResolvedValue(null);
       const uploadFn = jest.spyOn(s3ClientService, 'upload');
       const updateFn = jest
-        .spyOn(foodItemRepo, 'update')
+        .spyOn(productRepo, 'update')
         .mockResolvedValue(expected);
 
-      const actual = await foodItemsService.update(foodItem.id, updateFoodItem);
+      const actual = await productsService.update(product.id, updateProduct);
       expect(actual).toEqual(expected);
       expect(uploadFn).not.toHaveBeenCalled();
       expect(updateFn).toHaveBeenCalledWith({
-        ...updateFoodItem,
-        id: foodItem.id,
+        ...updateProduct,
+        id: product.id,
       });
     });
 
-    it('should return null if foodItem didnt exist', async () => {
+    it('should return null if product didnt exist', async () => {
       const id = randomUUID();
-      const updateFoodItem: UpdateFoodItemDto = {
+      const updateProduct: UpdateProductDto = {
         name: 'new food',
         price: 98,
       };
       const image = getMockImageFile();
-      jest.spyOn(foodItemRepo, 'isExists').mockResolvedValue(false);
+      jest.spyOn(productRepo, 'isExists').mockResolvedValue(false);
       const uploadFn = jest.spyOn(s3ClientService, 'upload');
-      const updateFn = jest.spyOn(foodItemRepo, 'update');
+      const updateFn = jest.spyOn(productRepo, 'update');
 
-      const actual = await foodItemsService.update(id, updateFoodItem, image);
+      const actual = await productsService.update(id, updateProduct, image);
       expect(actual).toBeNull();
       expect(uploadFn).not.toHaveBeenCalled();
       expect(updateFn).not.toHaveBeenCalled();
     });
 
     it('should throw ConflictException if name already exists for another food item', async () => {
-      const foodItem = getMockFoodItem();
-      const anotherFoodItem = { ...getMockFoodItem(), id: randomUUID() };
-      const updateFoodItem: UpdateFoodItemDto = {
-        name: anotherFoodItem.name,
+      const product = getMockProduct();
+      const anotherProduct = { ...getMockProduct(), id: randomUUID() };
+      const updateProduct: UpdateProductDto = {
+        name: anotherProduct.name,
         price: 98,
       };
-      jest.spyOn(foodItemRepo, 'isExists').mockResolvedValue(true);
+      jest.spyOn(productRepo, 'isExists').mockResolvedValue(true);
       jest
-        .spyOn(foodItemRepo, 'findOneBy')
-        .mockResolvedValueOnce(anotherFoodItem);
+        .spyOn(productRepo, 'findOneBy')
+        .mockResolvedValueOnce(anotherProduct);
       const uploadFn = jest.spyOn(s3ClientService, 'upload');
-      const updateFn = jest.spyOn(foodItemRepo, 'update');
+      const updateFn = jest.spyOn(productRepo, 'update');
 
       await expect(
-        foodItemsService.update(foodItem.id, updateFoodItem),
+        productsService.update(product.id, updateProduct),
       ).rejects.toThrow(ConflictException);
       expect(uploadFn).not.toHaveBeenCalled();
       expect(updateFn).not.toHaveBeenCalled();
@@ -296,25 +296,25 @@ describe('FoodItemsService', () => {
   });
 
   describe('remove()', () => {
-    it('should delete image and record of foodItem and return true', async () => {
-      const id = getMockFoodItem().id;
-      jest.spyOn(foodItemRepo, 'isExists').mockResolvedValue(true);
-      const deleteByFn = jest.spyOn(foodItemRepo, 'deleteBy');
+    it('should delete image and record of product and return true', async () => {
+      const id = getMockProduct().id;
+      jest.spyOn(productRepo, 'isExists').mockResolvedValue(true);
+      const deleteByFn = jest.spyOn(productRepo, 'deleteBy');
       const deleteFn = jest.spyOn(s3ClientService, 'delete');
 
-      const actual = await foodItemsService.remove(id);
+      const actual = await productsService.remove(id);
       expect(deleteByFn).toHaveBeenCalledWith({ id });
       expect(deleteFn).toHaveBeenCalledWith(id);
       expect(actual).toBe(true);
     });
 
-    it('should return false if foodItem dosent exists', async () => {
+    it('should return false if product dosent exists', async () => {
       const id = randomUUID();
-      jest.spyOn(foodItemRepo, 'isExists').mockResolvedValue(false);
-      const deleteByFn = jest.spyOn(foodItemRepo, 'deleteBy');
+      jest.spyOn(productRepo, 'isExists').mockResolvedValue(false);
+      const deleteByFn = jest.spyOn(productRepo, 'deleteBy');
       const deleteFn = jest.spyOn(s3ClientService, 'delete');
 
-      const actual = await foodItemsService.remove(id);
+      const actual = await productsService.remove(id);
       expect(deleteByFn).not.toHaveBeenCalled();
       expect(deleteFn).not.toHaveBeenCalled();
       expect(actual).toBe(false);

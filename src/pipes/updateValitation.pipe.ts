@@ -17,7 +17,7 @@ export class UpdateValidator<T> extends Validator<Partial<T>> {
           actualType: typeof value[key],
         });
 
-      if (typeof value[key] === 'object')
+      if (typeof value[key] === 'object' && ref[key])
         this.validateObject(
           value[key] as Partial<T>,
           ref[key] as Partial<T>,
@@ -31,7 +31,10 @@ export class UpdateValidator<T> extends Validator<Partial<T>> {
     for (const key in value) {
       if (Object.keys(this.ref).includes(key)) {
         this.validateObject(value, this.ref);
-        return value;
+        return Object.keys(this.ref).reduce((acc, curr) => {
+          if (curr in this.ref) acc[curr] = value[curr];
+          return acc;
+        }, {});
       }
     }
     throw new BadRequestException({

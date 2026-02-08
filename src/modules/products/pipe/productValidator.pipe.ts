@@ -1,16 +1,16 @@
 import { ArgumentMetadata, BadRequestException } from '@nestjs/common';
-import { CreateFoodItemDto, UpdateFoodItemDto } from '../dto/food-item.dto';
+import { CreateProductDto, UpdateProductDto } from '../dto/product.dto';
 import { Validator } from 'src/pipes/validation.pipe';
 import { UpdateValidator } from 'src/pipes/updateValitation.pipe';
 
-export class CreateFoodItemValidator extends Validator<CreateFoodItemDto> {
+export class CreateProductValidator extends Validator<CreateProductDto> {
   constructor() {
-    super({ name: '', price: 0 });
+    super({ name: '', price: 0, shopId: '1-1-1-1-1' });
   }
   transform(
-    value: Partial<CreateFoodItemDto>,
+    value: Partial<CreateProductDto>,
     metadata: ArgumentMetadata,
-  ): CreateFoodItemDto {
+  ): CreateProductDto {
     if (!value)
       throw new BadRequestException({
         error: 'No body found',
@@ -21,14 +21,14 @@ export class CreateFoodItemValidator extends Validator<CreateFoodItemDto> {
   }
 }
 
-export class UpdateFoodItemValidator extends UpdateValidator<UpdateFoodItemDto> {
+export class UpdateProductValidator extends UpdateValidator<UpdateProductDto> {
   constructor() {
     super({ name: '', price: 0 });
   }
   transform(
-    value: Partial<UpdateFoodItemDto>,
+    value: Partial<UpdateProductDto>,
     metadata: ArgumentMetadata,
-  ): UpdateFoodItemDto {
+  ): UpdateProductDto {
     if (!value)
       throw new BadRequestException({
         error: 'No body found',

@@ -10,6 +10,8 @@ import { type IAuthService } from 'src/modules/auth/interfaces/authService.inter
 import { ClientUserDto, CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { Role } from 'src/guards/role.enum';
 import { HashService } from '../auth/hash.service';
+import { UUID } from 'crypto';
+import { ShopsService } from '../shops/shops.service';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +21,7 @@ export class UsersService {
     @Inject(forwardRef(() => 'AuthService'))
     private readonly authService: IAuthService,
     private readonly hashService: HashService,
+    protected readonly shopService: ShopsService,
   ) {}
 
   async create(user: CreateUserDto): Promise<ClientUserDto | null> {
@@ -29,12 +32,26 @@ export class UsersService {
     return { ...newUser, authorization };
   }
 
-  async createCustomer(user: CreateUserDto) {
+  async createUserInMall(
+    user: CreateUserDto,
+    mallId: UUID,
+    shopId?: UUID,
+  ): Promise<ClientUserDto | null> {
+    if (user.role === Role.SUPER_ADMIN)
+      throw new ConflictException('Super Admin cannot be created in a mall');
+    return this.create({ ...user, mallId, shopId });
+  }
+
+  createCustomer(user: CreateUserDto) {
     return this.create({ ...user, role: Role.CUSTOMER });
   }
 
   findAll(): Promise<User[]> {
     return this.userRepo.findBy();
+  }
+
+  findAllInMall(mallId: UUID): Promise<User[]> {
+    return this.userRepo.findBy({ mallId });
   }
 
   findOne(username: string): Promise<User | null> {
@@ -50,6 +67,10 @@ export class UsersService {
     email: string,
   ): Promise<User | null> {
     return this.userRepo.findOneBy({ username, email }, true);
+  }
+
+  findOneInMall(username: string, mallId: UUID): Promise<User | null> {
+    return this.userRepo.findOneBy({ username, mallId });
   }
 
   findOneCustomer(username: string) {
@@ -76,6 +97,16 @@ export class UsersService {
     return this.userRepo.update({ ...newUser, id: existingUser.id });
   }
 
+  async updateInMall(
+    username: string,
+    user: UpdateUserDto,
+    mallId: UUID,
+  ): Promise<User | null> {
+    const existingUser = await this.findOneInMall(username, mallId);
+    if (!existingUser) return null;
+    return this.update(username, { ...user, mallId });
+  }
+
   async updateCustomer(
     username: string,
     user: UpdateUserDto,
@@ -88,6 +119,12 @@ export class UsersService {
   async remove(username: string): Promise<boolean> {
     if (!(await this.isExists(username))) return false;
     await this.userRepo.deleteBy({ username });
+    return true;
+  }
+
+  async removeInMall(username: string, mallId: UUID): Promise<boolean> {
+    if (!(await this.findOneInMall(username, mallId))) return false;
+    await this.userRepo.deleteBy({ username, mallId });
     return true;
   }
 

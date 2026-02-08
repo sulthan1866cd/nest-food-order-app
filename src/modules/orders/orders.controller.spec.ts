@@ -43,7 +43,7 @@ describe('OrdersController', () => {
     it('should create new order and return created order', async () => {
       const order = getMockOrder();
       const createOrder: CreateOrderDto = {
-        foodItemId: order.foodItemId,
+        productId: order.productId,
         username: order.username,
         quantity: 3,
       };
@@ -59,7 +59,7 @@ describe('OrdersController', () => {
     it('should throw exception if user dosent exist', async () => {
       const order = getMockOrder();
       const createOrder: CreateOrderDto = {
-        foodItemId: order.foodItemId,
+        productId: order.productId,
         username: order.username,
         quantity: 3,
       };

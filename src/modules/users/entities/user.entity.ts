@@ -8,4 +8,6 @@ export class User {
   fullName: string;
   email: string;
   role: Role;
+  shopId?: UUID; //if worker
+  mallId?: UUID; //if admin/worker
 }

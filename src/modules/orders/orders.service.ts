@@ -17,7 +17,7 @@ export class OrdersService {
     if (!(await this.userService.isExists(order.username))) return null;
     const previousOrder = await this.orderRepo.findOneBy({
       username: order.username,
-      foodItemId: order.foodItemId,
+      productId: order.productId,
     });
     if (previousOrder && previousOrder.status === OrderStatus.PENDING)
       return this.orderRepo.update({
@@ -30,6 +30,11 @@ export class OrdersService {
 
   findAll(): Promise<Order[]> {
     return this.orderRepo.findBy();
+  }
+
+  async findAllByShopId(shopId: UUID): Promise<Order[]> {
+    const allOrders = await this.orderRepo.findBy();
+    return allOrders.filter((order) => order.product.shopId === shopId);
   }
 
   findByUsername(username: string): Promise<Order[]> {

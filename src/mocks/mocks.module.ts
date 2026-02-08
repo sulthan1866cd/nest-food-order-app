@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { UserMockRepository } from './mockRepos/users.mockRepo';
 import { OrderMockRepository } from './mockRepos/orders.mockRepo';
-import { foodItemMockRepository } from './mockRepos/foodItem.mockRepo';
+import { ProductMockRepository } from './mockRepos/product.mockRepo';
+import { ShopMockRepository } from './mockRepos/shops.mockRepo';
+import { MallMockRepository } from './mockRepos/malls.mockRepo';
 
 @Module({
   providers: [
@@ -14,10 +16,24 @@ import { foodItemMockRepository } from './mockRepos/foodItem.mockRepo';
       useClass: OrderMockRepository,
     },
     {
-      provide: 'FoodItemRepository',
-      useClass: foodItemMockRepository,
+      provide: 'ProductRepository',
+      useClass: ProductMockRepository,
+    },
+    {
+      provide: 'ShopRepository',
+      useClass: ShopMockRepository,
+    },
+    {
+      provide: 'MallRepository',
+      useClass: MallMockRepository,
     },
   ],
-  exports: ['UserRepository', 'OrderRepository', 'FoodItemRepository'],
+  exports: [
+    'UserRepository',
+    'OrderRepository',
+    'ProductRepository',
+    'ShopRepository',
+    'MallRepository',
+  ],
 })
 export class MockModule {}

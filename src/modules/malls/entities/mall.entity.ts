@@ -1,8 +1,7 @@
 import { UUID } from 'crypto';
 
-export class FoodItem {
+export class Mall {
   id: UUID;
   name: string;
-  price: number;
-  image: string;
+  location: string;
 }

@@ -8,7 +8,7 @@ export class CreateOrderValidator extends Validator<CreateOrderDto> {
   constructor() {
     super({
       username: '',
-      foodItemId: '1-1-1-1-1',
+      productId: '1-1-1-1-1',
       quantity: 0,
     });
   }

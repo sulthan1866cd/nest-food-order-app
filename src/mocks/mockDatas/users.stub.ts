@@ -1,8 +1,18 @@
 import { randomInt, randomUUID } from 'crypto';
 import { Role } from 'src/guards/role.enum';
 import { User } from 'src/modules/users/entities/user.entity';
+import { getMockMall } from './malls.stub';
+import { getMockShop } from './shops.stub';
 
 export const mockUsers: User[] = [
+  {
+    id: randomUUID(),
+    username: 'admin',
+    password: '$2a$12$OBIkThc5UVO9iumIwRDzhe4C/4JroXaSSXs3DVnaRIrZdIROfwkVm', // original password: ironwolf1
+    fullName: 'Admin User',
+    email: 'admin@example.com',
+    role: Role.SUPER_ADMIN,
+  },
   {
     id: randomUUID(),
     username: 'ironwolf',
@@ -18,6 +28,7 @@ export const mockUsers: User[] = [
     fullName: 'Priya Nair',
     email: 'priya.nair@example.com',
     role: Role.ADMIN,
+    mallId: getMockMall().id,
   },
   {
     id: randomUUID(),
@@ -25,7 +36,14 @@ export const mockUsers: User[] = [
     password: '$2a$12$.tFazz2iwWMSWS5Ty1S/b.FILAs8DTV36f0ZDkLH2k2ih.0S1C7iO', // original password: nightcoder3
     fullName: 'Rohit Sharma',
     email: 'rohit.sharma@example.com',
-    role: Role.CHEF,
+    role: Role.WORKER,
+    ...(() => {
+      const shop = getMockShop();
+      return {
+        shopId: shop.id,
+        mallId: shop.mallId,
+      };
+    })(),
   },
   {
     id: randomUUID(),
@@ -33,7 +51,14 @@ export const mockUsers: User[] = [
     password: '$2a$12$SovzyWZlrxiRHHewP/jMiuvdZ/eZsZWzrZj44bDRFkpLnXu8F3ZGm', // original password: pixelqueen4
     fullName: 'Sara Thomas',
     email: 'sara.thomas@example.com',
-    role: Role.CHEF,
+    role: Role.WORKER,
+    ...(() => {
+      const shop = getMockShop();
+      return {
+        shopId: shop.id,
+        mallId: shop.mallId,
+      };
+    })(),
   },
   {
     id: randomUUID(),
@@ -47,6 +72,7 @@ export const mockUsers: User[] = [
 
 export const getOriginalPassword = (username: string): string => {
   const passwords = [
+    { username: 'admin', password: 'ironwolf1' },
     { username: 'ironwolf', password: 'ironwolf1' },
     { username: 'skyhawk', password: 'skyhawk2' },
     { username: 'nightcoder', password: 'nightcoder3' },

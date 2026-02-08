@@ -48,7 +48,7 @@ describe('OrdersService', () => {
     it('should create new order with new order', async () => {
       const order = getMockOrder();
       const createOrder: CreateOrderDto = {
-        foodItemId: order.foodItemId,
+        productId: order.productId,
         username: order.username,
         quantity: 3,
       };
@@ -65,7 +65,7 @@ describe('OrdersService', () => {
     it('should update order with old order', async () => {
       const order = getMockOrder();
       const createOrder: CreateOrderDto = {
-        foodItemId: order.foodItemId,
+        productId: order.productId,
         username: order.username,
         quantity: 3,
       };
@@ -82,7 +82,7 @@ describe('OrdersService', () => {
     it('should return null if user dosent exist', async () => {
       const order = getMockOrder();
       const createOrder: CreateOrderDto = {
-        foodItemId: order.foodItemId,
+        productId: order.productId,
         username: order.username,
         quantity: 3,
       };

@@ -39,10 +39,19 @@ export class OrdersController {
   }
 
   @Get()
-  @Roles(Role.CHEF)
+  @Roles(Role.WORKER, Role.ADMIN)
   @UseGuards(RolesGuard)
   findAll(): Promise<Order[]> {
     return this.ordersService.findAll();
+  }
+
+  @Get('shops/:shopId')
+  @Roles(Role.WORKER, Role.ADMIN)
+  @UseGuards(RolesGuard)
+  async findAllByShopId(
+    @Param('shopId', ParseUUIDPipe) shopId: UUID,
+  ): Promise<Order[]> {
+    return this.ordersService.findAllByShopId(shopId);
   }
 
   @Get(':username')
