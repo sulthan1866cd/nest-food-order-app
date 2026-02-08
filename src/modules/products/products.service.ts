@@ -63,8 +63,17 @@ export class ProductsService {
     return orders.map((order) => order.product);
   }
 
-  findAllByShopId(shopId: UUID): Promise<Product[]> {
-    return this.productRepo.findBy({ shopId });
+  async findAllInShopBy(
+    shopId: UUID,
+    { searchQuery, min, max }: FindAllByParams,
+  ): Promise<Product[]> {
+    return (await this.productRepo.findBy({ shopId })).filter(
+      (product) =>
+        (searchQuery
+          ? this.filterByNameOrPriceQuery(product, searchQuery)
+          : true) &&
+        (min && max ? this.filterAllByPriceRange(product, +min, +max) : true),
+    );
   }
 
   findOne(id: UUID): Promise<Product | null> {

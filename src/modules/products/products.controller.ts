@@ -82,8 +82,15 @@ export class ProductsController {
   @Get('shops/:shopId')
   findAllByShopId(
     @Param('shopId', ParseUUIDPipe) shopId: UUID,
+    @Query('search-query') searchQuery?: string,
+    @Query('min') min?: string,
+    @Query('max') max?: string,
   ): Promise<Product[]> {
-    return this.productsService.findAllByShopId(shopId);
+    return this.productsService.findAllInShopBy(shopId, {
+      searchQuery,
+      min,
+      max,
+    });
   }
 
   @Put(':id')
